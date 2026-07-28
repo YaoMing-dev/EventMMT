@@ -1,11 +1,11 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/mmt_event_wedding
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:mmt_event_wedding}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,13 +13,13 @@ spring:
     open-in-view: false
   security:
     user:
-      name: admin
-      password: changeme
+      name: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:changeme}
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: your-email@gmail.com
-    password: your-gmail-app-password
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-gmail-app-password}
     properties:
       mail:
         smtp:
@@ -29,6 +29,8 @@ spring:
 
 app:
   images:
-    base-path: D:/Job/images
+    base-path: ${IMAGES_BASE_PATH:D:/Job/images}
   notify:
-    to-email: your-email@gmail.com
+    to-email: ${NOTIFY_TO_EMAIL:your-email@gmail.com}
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}

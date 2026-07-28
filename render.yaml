@@ -1,0 +1,60 @@
+databases:
+  - name: mmt-db
+    plan: free
+    databaseName: mmt_event_wedding
+    user: mmt_user
+
+services:
+  - type: web
+    name: mmt-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: mmt-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: mmt-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: mmt-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: mmt-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: mmt-db
+          property: password
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: FRONTEND_ORIGIN
+        value: https://mmt-frontend.onrender.com
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: NOTIFY_TO_EMAIL
+        sync: false
+
+  - type: web
+    name: mmt-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://mmt-backend.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

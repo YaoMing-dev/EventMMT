@@ -34,8 +34,11 @@ export default function ContactForm({ variant }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!phone.trim()) {
-      setErrors({ phone: 'Vui lòng nhập số điện thoại' })
+    const clientErrors = {}
+    if (!phone.trim()) clientErrors.phone = 'Vui lòng nhập số điện thoại'
+    if (!eventDate) clientErrors.eventDate = 'Vui lòng chọn ngày dự kiến'
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors)
       return
     }
     setErrors({})
@@ -77,8 +80,9 @@ export default function ContactForm({ variant }) {
         {(isEvent ? EVENT_TYPES : WEDDING_TYPES).map((t) => <option key={t} value={t}>{t}</option>)}
       </select>
 
-      <label>{isEvent ? 'Ngày dự kiến' : 'Ngày lành dự kiến'}</label>
-      <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+      <label htmlFor={`${variant}-event-date`}>{isEvent ? 'Ngày dự kiến' : 'Ngày lành dự kiến'}</label>
+      <input id={`${variant}-event-date`} type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+      {errors.eventDate && <div className="note" style={{ color: 'var(--accent)' }}>{errors.eventDate}</div>}
 
       {isEvent ? (
         <>
@@ -103,6 +107,11 @@ export default function ContactForm({ variant }) {
       />
       {errors.phone && <div className="note" style={{ color: 'var(--accent)' }}>{errors.phone}</div>}
       {errors.general && <div className="note" style={{ color: 'var(--accent)' }}>{errors.general}</div>}
+      {Object.entries(errors)
+        .filter(([field]) => field !== 'phone' && field !== 'eventDate' && field !== 'general')
+        .map(([field, message]) => (
+          <div className="note" style={{ color: 'var(--accent)' }} key={field}>{message}</div>
+        ))}
 
       <button className="btn gold" type="submit" disabled={status === 'submitting'}>
         {isEvent ? 'Gửi yêu cầu báo giá' : 'Giữ lịch & nhận báo giá'}
