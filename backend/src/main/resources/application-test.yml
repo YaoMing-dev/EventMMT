@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+  security:
+    user:
+      name: admin
+      password: test123
+  mail:
+    host: localhost
+    port: 3025
+
+app:
+  images:
+    base-path: ${java.io.tmpdir}
+  notify:
+    to-email: test@example.com
