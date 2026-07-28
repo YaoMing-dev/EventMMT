@@ -23,7 +23,7 @@ function Shell() {
 
   return (
     <>
-      {isSub && <Topbar />}
+      {isSub && <Topbar view={view} />}
       {isSub && <Header view={view} />}
       <Routes>
         <Route path="/" element={<HomeGate />} />
@@ -31,8 +31,8 @@ function Shell() {
         <Route path="/tiec-cuoi" element={<WeddingPage />} />
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
-      {isSub && <Footer />}
-      {isSub && <RailButtons />}
+      {isSub && <Footer view={view} />}
+      {isSub && <RailButtons view={view} />}
     </>
   )
 }

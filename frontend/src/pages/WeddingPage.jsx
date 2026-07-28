@@ -12,6 +12,7 @@ import AlbumServices from '../components/wedding/AlbumServices.jsx'
 import PricingTable from '../components/wedding/PricingTable.jsx'
 import { toneOrder } from '../data/toneData.js'
 import { pickImages, TONE_IMAGE_INDEXES } from '../data/imagePicks.js'
+import { contactInfo } from '../data/contactInfo.js'
 
 const STATS = [
   { value: '200+', label: 'lễ Vu Quy — Tân Hôn' },
@@ -73,8 +74,8 @@ export default function WeddingPage() {
             <span className="eyebrow">Giữ lịch ngày lành</span>
             <h2>Đã chọn ngày?<br /><em>Nhắn MMT giữ lịch ngay.</em></h2>
             <p>Mùa cưới lịch kín rất nhanh — gửi ngày lành và ảnh nhà, MMT báo giá chính xác trong 24 giờ.</p>
-            <div className="big">0939 050 550</div>
-            <p>Hotline kiêm Zalo · Cần Thơ &amp; các tỉnh miền Tây</p>
+            <div className="big">{contactInfo.wedding.phoneDisplay}</div>
+            <p>Hotline kiêm Zalo · {contactInfo.wedding.contactName} · Cần Thơ &amp; các tỉnh miền Tây</p>
           </div>
           <ContactForm variant="wedding" />
         </div>

@@ -1,4 +1,7 @@
-export default function Footer() {
+import { contactInfo } from '../../data/contactInfo.js'
+
+export default function Footer({ view }) {
+  const info = contactInfo[view] ?? contactInfo.event
   return (
     <footer>
       <div className="foot">
@@ -12,7 +15,9 @@ export default function Footer() {
         </div>
         <div>
           <h4>Liên hệ</h4>
-          Hotline / Zalo: 0939 050 550<br />Facebook: MMT Event · Minh Minh Thúy<br />mmtevent-wedding.com
+          Hotline / Zalo: {info.phoneDisplay} ({info.contactName})<br />
+          Facebook: <a href={info.facebookUrl} target="_blank" rel="noopener noreferrer">{view === 'wedding' ? 'Cưới hỏi trọn gói Minh Thúy' : 'Tổ chức sự kiện lễ hội Cần Thơ'}</a><br />
+          mmtevent-wedding.com
         </div>
         <div>
           <h4>Dịch vụ</h4>

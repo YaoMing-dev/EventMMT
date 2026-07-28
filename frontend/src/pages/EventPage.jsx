@@ -11,6 +11,7 @@ import GuestCalculator from '../components/event/GuestCalculator.jsx'
 import ProjectsList from '../components/event/ProjectsList.jsx'
 import ServicesGrid from '../components/event/ServicesGrid.jsx'
 import Pillars from '../components/event/Pillars.jsx'
+import { contactInfo } from '../data/contactInfo.js'
 
 const STATS = [
   { value: '10+', label: 'năm thi công' },
@@ -69,8 +70,8 @@ export default function EventPage() {
             <span className="eyebrow">Liên hệ</span>
             <h2>Cùng dựng nên<br /><em>dấu ấn của bạn.</em></h2>
             <p>Gửi thông tin ngắn gọn — MMT phản hồi qua Zalo trong 15 phút giờ hành chính và gửi báo giá chi tiết trong 24 giờ.</p>
-            <div className="big">0939 050 550</div>
-            <p>Hotline kiêm Zalo · Cần Thơ &amp; các tỉnh miền Tây</p>
+            <div className="big">{contactInfo.event.phoneDisplay}</div>
+            <p>Hotline kiêm Zalo · {contactInfo.event.contactName} · Cần Thơ &amp; các tỉnh miền Tây</p>
           </div>
           <ContactForm variant="event" />
         </div>
