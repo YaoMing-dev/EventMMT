@@ -1643,3 +1643,191 @@ cd D:/Job/mmt-app
 git add frontend/src/data/imagePicks.js frontend/src/data/imagePicks.test.js frontend/src/components/shared/Lightbox.jsx frontend/src/components/shared/Lightbox.test.jsx frontend/src/components/shared/Gallery.jsx frontend/src/components/shared/Gallery.test.jsx
 git commit -m "Add Gallery, Lightbox, and named image-slot picks for real photos"
 ```
+
+---
+
+### Task F11: Event static sections (ProjectsList, ServicesGrid, Pillars)
+
+These three carry the original site's real marketing copy verbatim (ported from
+`mmtevent-wedding-v3.html` lines 425-484). Per the plan's testing approach, a
+test asserting the exact Vietnamese string we just typed would be circular —
+the real check is the manual side-by-side comparison in Step 3. The automated
+test here only checks structure (right number of items rendered), which is a
+genuine regression guard.
+
+**Files:**
+- Create: `frontend/src/components/event/ProjectsList.jsx`
+- Create: `frontend/src/components/event/ServicesGrid.jsx`
+- Create: `frontend/src/components/event/Pillars.jsx`
+- Test: `frontend/src/components/event/EventStaticSections.test.jsx`
+
+**Interfaces:**
+- Consumes: `pickImages`, `SERVICE_CARD_INDEXES` (Task F10) — `ServicesGrid` receives the fetched `events` image list as a `images` prop (from `EventPage`, Task F12) and picks 3 representative photos from it.
+- Produces: `<ProjectsList />`, `<ServicesGrid images={[{filename,url}]} />`, `<Pillars />` — no other props needed; copy is embedded directly (this is the one place in the plan where content lives in the component, not a data file, since it's page-specific prose, not reusable data).
+
+- [ ] **Step 1: Write the structural test**
+
+```jsx
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import ProjectsList from './ProjectsList.jsx'
+import ServicesGrid from './ServicesGrid.jsx'
+import Pillars from './Pillars.jsx'
+
+describe('Event static sections', () => {
+  it('ProjectsList renders exactly 4 numbered projects', () => {
+    render(<ProjectsList />)
+    expect(screen.getAllByText(/^0[1-4]$/)).toHaveLength(4)
+  })
+
+  it('ServicesGrid renders exactly 3 service cards using provided images', () => {
+    const images = [
+      { filename: 'a.jpg', url: '/api/images/events/a.jpg' },
+      { filename: 'b.jpg', url: '/api/images/events/b.jpg' },
+      { filename: 'c.jpg', url: '/api/images/events/c.jpg' },
+    ]
+    render(<ServicesGrid images={images} />)
+    const cardImages = screen.getAllByRole('img')
+    expect(cardImages).toHaveLength(3)
+    expect(cardImages[0]).toHaveAttribute('src', '/api/images/events/a.jpg')
+  })
+
+  it('Pillars renders exactly 3 pillars', () => {
+    render(<Pillars />)
+    expect(screen.getAllByText(/^0[1-3]$/)).toHaveLength(3)
+  })
+})
+```
+
+- [ ] **Step 2: Run test to verify it fails, then create the three components**
+
+Run: `cd frontend && npx vitest run src/components/event/EventStaticSections.test.jsx`
+Expected: FAIL (components don't exist), then implement:
+
+```jsx
+// ProjectsList.jsx
+export default function ProjectsList() {
+  const projects = [
+    { no: '01', title: 'Lễ ra quân VNPT Cần Thơ', meta: 'Nghi lễ · Nhà bạt · Sân khấu · 2025' },
+    { no: '02', title: 'Mở bán dự án Nam Long', meta: 'Ngoài trời · Nhà bạt đôi · 800 khách · 2025' },
+    { no: '03', title: 'Động thổ Cara Legend — Caragroup', meta: 'Nghi thức · Múa lân · Cổng chào · 2025' },
+    { no: '04', title: 'Hội nghị công nghệ ĐH Nam Cần Thơ', meta: 'Hội nghị · LED · Đại biểu · 2024' },
+  ]
+  return (
+    <section className="blk" id="duan" style={{ paddingTop: 0 }}>
+      <div className="sec-head rv">
+        <span className="eyebrow">Dự án tiêu biểu</span>
+        <h2>Những dấu mốc chúng tôi <em>dựng nên</em></h2>
+      </div>
+      <div className="projects rv">
+        {projects.map((p) => (
+          <div className="proj" key={p.no}>
+            <span className="no">{p.no}</span>
+            <div><h3>{p.title}</h3><div className="meta">{p.meta}</div></div>
+            <span className="view">Xem dự án →</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+```
+
+```jsx
+// ServicesGrid.jsx
+import { pickImages, SERVICE_CARD_INDEXES } from '../../data/imagePicks.js'
+
+export default function ServicesGrid({ images }) {
+  const [imgA, imgB, imgC] = pickImages(images, Object.values(SERVICE_CARD_INDEXES))
+  const services = [
+    { num: '01', img: imgA, title: 'Nhà bạt không gian & mở bán ngoài trời',
+      desc: 'Hạng mục thế mạnh đặc trưng của MMT tại miền Tây — che nắng mưa tuyệt đối cho sự kiện quy mô lớn.',
+      items: ['Nhà bạt sọc quy mô đến 1.000 khách', 'Quạt hơi nước, khu tea break', 'Thi công trong 48 giờ'],
+      cap: 'Ảnh dự án — Mở bán Nam Long' },
+    { num: '02', img: imgB, title: 'Lễ khai trương · Động thổ · Ra quân',
+      desc: 'Kịch bản nghi thức chuẩn doanh nghiệp, chạy thử toàn bộ trước giờ G.',
+      items: ['Sân khấu, backdrop, cổng chào', 'Múa lân, MC, nghi thức cắt băng', 'Kỹ thuật trực suốt buổi lễ'],
+      cap: 'Ảnh dự án — Lễ ra quân VNPT' },
+    { num: '03', img: imgC, title: 'Hội nghị · Hội thảo & cho thuê thiết bị',
+      desc: 'Trọn gói kỹ thuật cho hội nghị trong nhà lẫn không gian mở, hoặc thuê lẻ từng hạng mục.',
+      items: ['Âm thanh hội nghị, màn hình LED', 'Bàn ghế đại biểu, đón tiếp', 'Giao lắp tận nơi trong ngày'],
+      cap: 'Ảnh dự án — Hội nghị ĐH Nam Cần Thơ' },
+  ]
+  return (
+    <section className="blk" id="dichvu" style={{ paddingTop: 0 }}>
+      <div className="sec-head rv">
+        <span className="eyebrow">Năng lực</span>
+        <h2>Thi công, dàn dựng &amp; <em>vận hành</em></h2>
+      </div>
+      <div className="svcgrid">
+        {services.map((s) => (
+          <div className="svc2 rv" key={s.num}>
+            <div className="txt">
+              <h3>{s.title}</h3>
+              <p>{s.desc}</p>
+              <ul>{s.items.map((it) => <li key={it}>{it}</li>)}</ul>
+              <span className="more">Xem chi tiết</span>
+            </div>
+            <div className="card-ph">
+              <div className="img">
+                {s.img && <img src={s.img} alt={s.cap} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </div>
+              <span className="num">{s.num}</span>
+              <span className="cap">{s.cap}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+```
+
+```jsx
+// Pillars.jsx
+export default function Pillars() {
+  const pillars = [
+    { no: '01', title: 'Đúng giờ khai mạc', desc: 'Sự kiện không có cơ hội làm lại. Mọi hạng mục dựng xong và chạy thử trước giờ G — đó là cam kết, không phải khẩu hiệu.' },
+    { no: '02', title: 'Giá minh bạch từng hạng mục', desc: 'Báo giá chi tiết trong 24 giờ, bóc tách rõ ràng, không phát sinh ẩn khi đã ký.' },
+    { no: '03', title: 'Đội thi công tại chỗ', desc: 'Nhân sự và kho thiết bị đặt tại Cần Thơ — xử lý phát sinh trong 30 phút, không chờ điều động.' },
+  ]
+  return (
+    <section className="blk" style={{ paddingTop: 0 }}>
+      <div className="sec-head rv">
+        <span className="eyebrow">Cách MMT làm việc</span>
+        <h2>Vì sao doanh nghiệp chọn MMT cho ngày <em>quan trọng nhất</em></h2>
+      </div>
+      <div className="pillars rv">
+        {pillars.map((p) => (
+          <div className="pillar" key={p.no}>
+            <span className="no">{p.no}</span>
+            <h3>{p.title}</h3>
+            <p>{p.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 3: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/components/event/EventStaticSections.test.jsx`
+Expected: PASS
+
+- [ ] **Step 4: Manual side-by-side comparison**
+
+Open `D:\Job\mmtevent-wedding-v3.html` in a browser, switch to the Event view.
+Compare, section by section, against these three components once wired into
+`EventPage` (Task F12): `#duan` (4 projects, same titles/meta), `#dichvu` (3
+service blocks, same headings/bullet lists/order), and the pillars block right
+after (3 pillars, same headings/body text). Fix any copy drift now.
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/components/event/ProjectsList.jsx frontend/src/components/event/ServicesGrid.jsx frontend/src/components/event/Pillars.jsx frontend/src/components/event/EventStaticSections.test.jsx
+git commit -m "Add ProjectsList, ServicesGrid, Pillars event sections"
+```
