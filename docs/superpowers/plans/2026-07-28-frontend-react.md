@@ -546,3 +546,412 @@ cd D:/Job/mmt-app
 git add frontend/src/pages/HomeGate.jsx frontend/src/pages/HomeGate.test.jsx frontend/src/App.jsx
 git commit -m "Add HomeGate landing page"
 ```
+
+---
+
+### Task F5: Shared static components (StatsBar, ProcessSteps, Quotes)
+
+**Files:**
+- Create: `frontend/src/components/shared/StatsBar.jsx`
+- Create: `frontend/src/components/shared/ProcessSteps.jsx`
+- Create: `frontend/src/components/shared/Quotes.jsx`
+- Test: `frontend/src/components/shared/StatsBar.test.jsx`
+- Test: `frontend/src/components/shared/ProcessSteps.test.jsx`
+- Test: `frontend/src/components/shared/Quotes.test.jsx`
+
+**Interfaces:**
+- Produces: `<StatsBar items={[{value, label}]} />`, `<ProcessSteps title={reactNode} steps={[{no, title, desc}]} />`, `<Quotes items={[{text, name, meta}]} />`. These take data as props (event/wedding real copy is supplied by the page components in Tasks F12/F14) — this task tests the render contract, not the copy itself.
+
+- [ ] **Step 1: Write the failing tests**
+
+```jsx
+// StatsBar.test.jsx
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import StatsBar from './StatsBar.jsx'
+
+describe('StatsBar', () => {
+  it('renders one stat per item with value and label', () => {
+    render(<StatsBar items={[{ value: '10+', label: 'năm thi công' }, { value: '300+', label: 'sự kiện' }]} />)
+    expect(screen.getByText('10+')).toBeInTheDocument()
+    expect(screen.getByText('năm thi công')).toBeInTheDocument()
+    expect(screen.getByText('300+')).toBeInTheDocument()
+    expect(screen.getByText('sự kiện')).toBeInTheDocument()
+  })
+})
+```
+
+```jsx
+// ProcessSteps.test.jsx
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import ProcessSteps from './ProcessSteps.jsx'
+
+describe('ProcessSteps', () => {
+  it('renders every step with its number, title, and description', () => {
+    render(
+      <ProcessSteps
+        title={<h2>Bốn bước</h2>}
+        steps={[{ no: 'Bước 01', title: 'Khảo sát', desc: 'Xem mặt bằng.' }]}
+      />
+    )
+    expect(screen.getByText('Bốn bước')).toBeInTheDocument()
+    expect(screen.getByText('Bước 01')).toBeInTheDocument()
+    expect(screen.getByText('Khảo sát')).toBeInTheDocument()
+    expect(screen.getByText('Xem mặt bằng.')).toBeInTheDocument()
+  })
+})
+```
+
+```jsx
+// Quotes.test.jsx
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import Quotes from './Quotes.jsx'
+
+describe('Quotes', () => {
+  it('renders every quote with text, name, and meta', () => {
+    render(<Quotes items={[{ text: 'Rất chuyên nghiệp.', name: 'Cô dâu A', meta: 'Bộ sưu tập Son' }]} />)
+    expect(screen.getByText('Rất chuyên nghiệp.')).toBeInTheDocument()
+    expect(screen.getByText('Cô dâu A')).toBeInTheDocument()
+    expect(screen.getByText('Bộ sưu tập Son')).toBeInTheDocument()
+  })
+})
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `cd frontend && npx vitest run src/components/shared/StatsBar.test.jsx src/components/shared/ProcessSteps.test.jsx src/components/shared/Quotes.test.jsx`
+Expected: FAIL (components don't exist)
+
+- [ ] **Step 3: Create `StatsBar.jsx`**
+
+```jsx
+export default function StatsBar({ items }) {
+  return (
+    <div className="stats">
+      <div className="row">
+        {items.map((item, i) => (
+          <div className="stat rv" key={i}>
+            <b>{item.value}</b>
+            <span>{item.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 4: Create `ProcessSteps.jsx`**
+
+```jsx
+export default function ProcessSteps({ id, title, steps }) {
+  return (
+    <section className="blk" id={id} style={{ paddingTop: 0 }}>
+      <div className="sec-head center rv">
+        <span className="eyebrow">Quy trình</span>
+        {title}
+      </div>
+      <div className="steps rv">
+        {steps.map((step, i) => (
+          <div className="step" key={i}>
+            <span className="no">{step.no}</span>
+            <h3>{step.title}</h3>
+            <p>{step.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 5: Create `Quotes.jsx`**
+
+```jsx
+export default function Quotes({ items }) {
+  return (
+    <section className="blk" style={{ paddingTop: 0 }}>
+      <div className="quotes rv">
+        {items.map((item, i) => (
+          <div className="quote" key={i}>
+            <p>{item.text}</p>
+            <div className="who"><b>{item.name}</b>{item.meta}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 6: Run tests to verify they pass**
+
+Run: `cd frontend && npx vitest run src/components/shared/StatsBar.test.jsx src/components/shared/ProcessSteps.test.jsx src/components/shared/Quotes.test.jsx`
+Expected: PASS
+
+- [ ] **Step 7: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/components/shared/StatsBar.jsx frontend/src/components/shared/ProcessSteps.jsx frontend/src/components/shared/Quotes.jsx frontend/src/components/shared/StatsBar.test.jsx frontend/src/components/shared/ProcessSteps.test.jsx frontend/src/components/shared/Quotes.test.jsx
+git commit -m "Add shared StatsBar, ProcessSteps, Quotes components"
+```
+
+---
+
+### Task F6: Scroll-reveal hook
+
+**Files:**
+- Create: `frontend/src/components/shared/useScrollReveal.js`
+- Test: `frontend/src/components/shared/useScrollReveal.test.jsx`
+
+**Interfaces:**
+- Produces: `useScrollReveal()` — a hook with no arguments/return value that, on mount, observes every `.rv` element in the document and adds the `in` class when it intersects, then stops observing that element. Called once by each page component (`EventPage`, `WeddingPage` in Tasks F12/F14).
+
+- [ ] **Step 1: Write the failing test**
+
+```jsx
+import { render } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import useScrollReveal from './useScrollReveal.js'
+
+let observedElements = []
+let intersectionCallback
+
+class FakeIntersectionObserver {
+  constructor(callback) {
+    intersectionCallback = callback
+  }
+  observe(el) {
+    observedElements.push(el)
+  }
+  unobserve() {}
+  disconnect() {}
+}
+
+function TestComponent() {
+  useScrollReveal()
+  return <div className="rv" data-testid="target">content</div>
+}
+
+describe('useScrollReveal', () => {
+  beforeEach(() => {
+    observedElements = []
+    global.IntersectionObserver = FakeIntersectionObserver
+  })
+
+  it('observes .rv elements and adds "in" class when intersecting', () => {
+    const { getByTestId } = render(<TestComponent />)
+    const target = getByTestId('target')
+
+    expect(observedElements).toContain(target)
+    expect(target.className).not.toContain('in')
+
+    intersectionCallback([{ target, isIntersecting: true }])
+
+    expect(target.className).toContain('in')
+  })
+})
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/components/shared/useScrollReveal.test.jsx`
+Expected: FAIL (hook does not exist)
+
+- [ ] **Step 3: Create `useScrollReveal.js`**
+
+```js
+import { useEffect } from 'react'
+
+export default function useScrollReveal() {
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.rv').forEach((el) => el.classList.add('in'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.12 },
+    )
+
+    document.querySelectorAll('.rv').forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
+  }, [])
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/components/shared/useScrollReveal.test.jsx`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/components/shared/useScrollReveal.js frontend/src/components/shared/useScrollReveal.test.jsx
+git commit -m "Add useScrollReveal hook replacing the original IntersectionObserver script"
+```
+
+---
+
+### Task F7: Guest calculator (event page infrastructure spec logic)
+
+**Files:**
+- Create: `frontend/src/components/event/GuestCalculator.jsx`
+- Test: `frontend/src/components/event/GuestCalculator.test.jsx`
+
+**Interfaces:**
+- Produces: `<GuestCalculator />` — self-contained, no props. Ports the exact thresholds from the original `updateB2BSpecs(val)`: `<=300`, `<=700`, else.
+
+- [ ] **Step 1: Write the failing test**
+
+```jsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import GuestCalculator from './GuestCalculator.jsx'
+
+describe('GuestCalculator', () => {
+  it('defaults to the 500-guest (12m-15m) tier', () => {
+    render(<GuestCalculator />)
+    expect(screen.getByText('500 Khách')).toBeInTheDocument()
+    expect(screen.getByText(/Khẩu độ 12m - 15m/)).toBeInTheDocument()
+  })
+
+  it('switches to the small tier at <=300', () => {
+    render(<GuestCalculator />)
+    fireEvent.change(screen.getByRole('slider'), { target: { value: '200' } })
+    expect(screen.getByText('200 Khách')).toBeInTheDocument()
+    expect(screen.getByText(/Khẩu độ 10m/)).toBeInTheDocument()
+    expect(screen.getByText(/Bàn giao trước G-12 giờ/)).toBeInTheDocument()
+  })
+
+  it('switches to the large tier above 700', () => {
+    render(<GuestCalculator />)
+    fireEvent.change(screen.getByRole('slider'), { target: { value: '900' } })
+    expect(screen.getByText(/Khẩu độ 18m - 20m/)).toBeInTheDocument()
+    expect(screen.getByText(/20.000W/)).toBeInTheDocument()
+  })
+})
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/components/event/GuestCalculator.test.jsx`
+Expected: FAIL (component does not exist)
+
+- [ ] **Step 3: Create `GuestCalculator.jsx`**
+
+```jsx
+import { useState } from 'react'
+
+function specsFor(guests) {
+  if (guests <= 300) {
+    return {
+      tent: 'Khẩu độ 10m · Diện tích ~250m²',
+      led: 'Màn LED P3.91 · Kích thước 15m²',
+      audio: 'Hệ thống Sub/Full 6.000W chuẩn hội nghị',
+      time: 'Bàn giao trước G-12 giờ (Thi công 18h)',
+    }
+  }
+  if (guests <= 700) {
+    return {
+      tent: 'Khẩu độ 12m - 15m · Diện tích ~500m²',
+      led: 'Màn LED P3.91 · Kích thước 24m² - 30m²',
+      audio: 'Line Array 8 Sub 12 Full ngoài trời',
+      time: 'Bàn giao trước G-24 giờ (Thi công 24h)',
+    }
+  }
+  return {
+    tent: 'Khẩu độ 18m - 20m · Diện tích ~900m² - 1200m²',
+    led: 'Màn LED P3.91 · Kích thước 40m² + 2 Màn phụ',
+    audio: 'Hệ thống Line Array công suất lớn 20.000W',
+    time: 'Bàn giao trước G-24 giờ (Thi công 48h)',
+  }
+}
+
+export default function GuestCalculator() {
+  const [guests, setGuests] = useState(500)
+  const specs = specsFor(guests)
+
+  return (
+    <>
+      <div className="guest-calculator rv">
+        <div className="calc-header">
+          <span>Quy mô sự kiện dự kiến:</span>
+          <b>{guests} Khách</b>
+        </div>
+        <input
+          type="range"
+          role="slider"
+          min="100"
+          max="1200"
+          step="100"
+          value={guests}
+          onChange={(e) => setGuests(Number(e.target.value))}
+        />
+        <div className="range-labels">
+          <span>100 khách</span>
+          <span>500 khách</span>
+          <span>1.000+ khách</span>
+        </div>
+      </div>
+      <div className="specs-grid rv">
+        <div className="spec-card">
+          <div className="spec-info">
+            <small>HỆ THỐNG NHÀ BẠT</small>
+            <h3>{specs.tent}</h3>
+            <p>Bạt 2 lớp chống nóng cách nhiệt, khung truss hợp kim nhôm chịu lực ngoài trời.</p>
+          </div>
+        </div>
+        <div className="spec-card">
+          <div className="spec-info">
+            <small>MÀN HÌNH LED OUTDOOR</small>
+            <h3>{specs.led}</h3>
+            <p>Độ sáng cao ngoài trời, hệ thống cabin nhôm đúc siêu nhẹ, processor chuẩn HD.</p>
+          </div>
+        </div>
+        <div className="spec-card">
+          <div className="spec-info">
+            <small>ÂM THANH &amp; ÁNH SÁNG</small>
+            <h3>{specs.audio}</h3>
+            <p>Hệ thống loa Line Array công suất lớn, Mixer Digital 32 kênh, đèn Beam 350W.</p>
+          </div>
+        </div>
+        <div className="spec-card highlight">
+          <div className="spec-info">
+            <small>TIMELINE THI CÔNG CAM KẾT</small>
+            <h3>{specs.time}</h3>
+            <p>Thi công trong 24h. Đội ngũ trực kỹ thuật suốt thời gian diễn ra sự kiện.</p>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/components/event/GuestCalculator.test.jsx`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/components/event/GuestCalculator.jsx frontend/src/components/event/GuestCalculator.test.jsx
+git commit -m "Add GuestCalculator with ported B2B spec thresholds"
+```
