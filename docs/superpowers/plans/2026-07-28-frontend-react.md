@@ -1350,3 +1350,296 @@ cd D:/Job/mmt-app
 git add frontend/src/components/shared/ContactForm.jsx frontend/src/components/shared/ContactForm.test.jsx
 git commit -m "Add shared ContactForm wired to POST /api/leads"
 ```
+
+---
+
+### Task F10: Gallery, Lightbox, and named image-slot picks
+
+**Files:**
+- Create: `frontend/src/data/imagePicks.js`
+- Create: `frontend/src/components/shared/Lightbox.jsx`
+- Create: `frontend/src/components/shared/Gallery.jsx`
+- Test: `frontend/src/data/imagePicks.test.js`
+- Test: `frontend/src/components/shared/Lightbox.test.jsx`
+- Test: `frontend/src/components/shared/Gallery.test.jsx`
+
+**Interfaces:**
+- Produces: `pickImages(images, indexes)` — safe index-based picker with fallback. `<Lightbox images={[{filename,url}]} startIndex={number} onClose={fn} />`. `<Gallery category="events"|"wedding" />` — fetches `GET /api/images/{category}` itself.
+
+> **Note for the person wiring the wedding page (Task F14):** the 23 real wedding photos are not pre-sorted by color tone. `TONE_IMAGE_INDEXES` below picks representative photos by position only — they will not actually match "Son/Đào/Kem/Ngọc" thematically. Flag this to the site owner once the wedding page is visually reviewed; swapping specific photos into specific tones later is a one-line edit to `TONE_IMAGE_INDEXES` / `SERVICE_CARD_INDEXES` in this file, nothing else needs to change.
+
+- [ ] **Step 1: Write the failing test for `imagePicks.js`**
+
+```js
+import { describe, it, expect } from 'vitest'
+import { pickImages } from './imagePicks.js'
+
+describe('pickImages', () => {
+  it('returns URLs at the given indexes', () => {
+    const images = [{ url: 'a' }, { url: 'b' }, { url: 'c' }]
+    expect(pickImages(images, [0, 2])).toEqual(['a', 'c'])
+  })
+
+  it('falls back to undefined when an index is out of range', () => {
+    const images = [{ url: 'a' }]
+    expect(pickImages(images, [0, 5])).toEqual(['a', undefined])
+  })
+
+  it('returns an empty array when given no images', () => {
+    expect(pickImages([], [0, 1, 2])).toEqual([undefined, undefined, undefined])
+  })
+})
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/data/imagePicks.test.js`
+Expected: FAIL (`imagePicks.js` does not exist)
+
+- [ ] **Step 3: Create `imagePicks.js`**
+
+```js
+export function pickImages(images, indexes) {
+  return indexes.map((i) => images[i]?.url)
+}
+
+// Event service cards (ServicesGrid, Task F11) — one representative photo per card.
+export const SERVICE_CARD_INDEXES = { nhaBat: 0, khaiTruong: 1, hoiNghi: 2 }
+
+// Wedding tone gallery (ToneSelector, Task F8) — picked by position only, since the
+// 23 real wedding photos aren't pre-sorted by color tone. Swap these indexes once
+// the site owner has reviewed which real photos fit which tone.
+export const TONE_IMAGE_INDEXES = {
+  son: [0, 1, 2],
+  dao: [3, 4, 5],
+  kem: [6, 7, 8],
+  ngoc: [9, 10, 11],
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/data/imagePicks.test.js`
+Expected: PASS
+
+- [ ] **Step 5: Write the failing test for `Lightbox.jsx`**
+
+```jsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import Lightbox from './Lightbox.jsx'
+
+const images = [
+  { filename: 'a.jpg', url: '/api/images/events/a.jpg' },
+  { filename: 'b.jpg', url: '/api/images/events/b.jpg' },
+  { filename: 'c.jpg', url: '/api/images/events/c.jpg' },
+]
+
+describe('Lightbox', () => {
+  it('shows the image at startIndex and navigates next/prev', () => {
+    render(<Lightbox images={images} startIndex={0} onClose={() => {}} />)
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/images/events/a.jpg')
+
+    fireEvent.click(screen.getByRole('button', { name: /tiếp/i }))
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/images/events/b.jpg')
+
+    fireEvent.click(screen.getByRole('button', { name: /trước/i }))
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/images/events/a.jpg')
+  })
+
+  it('calls onClose on Escape and on backdrop click', () => {
+    const onClose = vi.fn()
+    render(<Lightbox images={images} startIndex={0} onClose={onClose} />)
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(onClose).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByTestId('lightbox-backdrop'))
+    expect(onClose).toHaveBeenCalledTimes(2)
+  })
+})
+```
+
+- [ ] **Step 6: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/components/shared/Lightbox.test.jsx`
+Expected: FAIL (`Lightbox` does not exist)
+
+- [ ] **Step 7: Create `Lightbox.jsx`**
+
+```jsx
+import { useEffect, useState } from 'react'
+
+export default function Lightbox({ images, startIndex, onClose }) {
+  const [index, setIndex] = useState(startIndex)
+
+  useEffect(() => {
+    function handleKey(e) {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') setIndex((i) => (i + 1) % images.length)
+      if (e.key === 'ArrowLeft') setIndex((i) => (i - 1 + images.length) % images.length)
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [images.length, onClose])
+
+  const current = images[index]
+
+  return (
+    <div
+      data-testid="lightbox-backdrop"
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,.85)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+      }}
+    >
+      <button
+        aria-label="Ảnh trước"
+        onClick={(e) => { e.stopPropagation(); setIndex((i) => (i - 1 + images.length) % images.length) }}
+      >
+        ‹ Trước
+      </button>
+      <img
+        src={current.url}
+        alt={current.filename}
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: '85vw', maxHeight: '85vh', objectFit: 'contain' }}
+      />
+      <button
+        aria-label="Ảnh tiếp"
+        onClick={(e) => { e.stopPropagation(); setIndex((i) => (i + 1) % images.length) }}
+      >
+        Tiếp ›
+      </button>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 8: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/components/shared/Lightbox.test.jsx`
+Expected: PASS
+
+- [ ] **Step 9: Write the failing test for `Gallery.jsx`**
+
+```jsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import Gallery from './Gallery.jsx'
+
+describe('Gallery', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn()
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('fetches and renders a thumbnail grid', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        { filename: 'a.jpg', url: '/api/images/events/a.jpg' },
+        { filename: 'b.jpg', url: '/api/images/events/b.jpg' },
+      ],
+    })
+
+    render(<Gallery category="events" />)
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/images/events'))
+    const thumbs = await screen.findAllByRole('img')
+    expect(thumbs).toHaveLength(2)
+    expect(thumbs[0]).toHaveAttribute('loading', 'lazy')
+  })
+
+  it('opens the Lightbox on thumbnail click', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        { filename: 'a.jpg', url: '/api/images/events/a.jpg' },
+        { filename: 'b.jpg', url: '/api/images/events/b.jpg' },
+      ],
+    })
+
+    render(<Gallery category="events" />)
+    const thumbs = await screen.findAllByRole('img')
+    fireEvent.click(thumbs[1])
+
+    expect(screen.getByTestId('lightbox-backdrop')).toBeInTheDocument()
+  })
+
+  it('shows a placeholder message when there are no images', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => [] })
+
+    render(<Gallery category="wedding" />)
+
+    expect(await screen.findByText(/Chưa có ảnh/i)).toBeInTheDocument()
+  })
+})
+```
+
+- [ ] **Step 10: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/components/shared/Gallery.test.jsx`
+Expected: FAIL (`Gallery` does not exist)
+
+- [ ] **Step 11: Create `Gallery.jsx`**
+
+```jsx
+import { useEffect, useState } from 'react'
+import Lightbox from './Lightbox.jsx'
+
+export default function Gallery({ category }) {
+  const [images, setImages] = useState([])
+  const [openIndex, setOpenIndex] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(`/api/images/${category}`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => { if (!cancelled) setImages(data) })
+      .catch(() => { if (!cancelled) setImages([]) })
+    return () => { cancelled = true }
+  }, [category])
+
+  if (images.length === 0) {
+    return <p>Chưa có ảnh — vui lòng quay lại sau.</p>
+  }
+
+  return (
+    <>
+      <div className="tone-gallery" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
+        {images.map((image, i) => (
+          <div className="gal-item" key={image.filename}>
+            <img
+              src={image.url}
+              alt={image.filename}
+              loading="lazy"
+              onClick={() => setOpenIndex(i)}
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
+        ))}
+      </div>
+      {openIndex !== null && (
+        <Lightbox images={images} startIndex={openIndex} onClose={() => setOpenIndex(null)} />
+      )}
+    </>
+  )
+}
+```
+
+- [ ] **Step 12: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/components/shared/Gallery.test.jsx`
+Expected: PASS
+
+- [ ] **Step 13: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/data/imagePicks.js frontend/src/data/imagePicks.test.js frontend/src/components/shared/Lightbox.jsx frontend/src/components/shared/Lightbox.test.jsx frontend/src/components/shared/Gallery.jsx frontend/src/components/shared/Gallery.test.jsx
+git commit -m "Add Gallery, Lightbox, and named image-slot picks for real photos"
+```
