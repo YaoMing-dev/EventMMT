@@ -1831,3 +1831,194 @@ cd D:/Job/mmt-app
 git add frontend/src/components/event/ProjectsList.jsx frontend/src/components/event/ServicesGrid.jsx frontend/src/components/event/Pillars.jsx frontend/src/components/event/EventStaticSections.test.jsx
 git commit -m "Add ProjectsList, ServicesGrid, Pillars event sections"
 ```
+
+---
+
+### Task F12: EventPage assembly (hero + all event sections)
+
+**Files:**
+- Create: `frontend/src/components/event/EventHero.jsx`
+- Create: `frontend/src/pages/EventPage.jsx`
+- Modify: `frontend/src/App.jsx`
+- Test: `frontend/src/pages/EventPage.test.jsx`
+
+**Interfaces:**
+- Consumes: `useScrollReveal` (F6), `StatsBar`/`ProcessSteps`/`Quotes` (F5), `GuestCalculator` (F7), `ProjectsList`/`ServicesGrid`/`Pillars` (F11), `ContactForm` (F9), `Gallery` (F10).
+- Produces: `<EventPage />`, mounted at `/su-kien` in `App.jsx`, replacing the placeholder.
+
+- [ ] **Step 1: Create `EventHero.jsx`**
+
+```jsx
+export default function EventHero() {
+  return (
+    <div className="hero">
+      <div className="art" />
+      <div className="in">
+        <div className="counter">01<i></i>05</div>
+        <div className="side-label">Một đầu mối — trọn ngày vui</div>
+        <div className="content">
+          <span className="eyebrow" style={{ marginBottom: 26 }}>Nhà thầu sự kiện trọn gói · Cần Thơ &amp; miền Tây</span>
+          <h1><span className="outline">DỰNG NÊN</span><br />NGÀY <span className="accented">đáng nhớ</span></h1>
+          <p>Từ nhà bạt 1.000 khách đến sân khấu trọn lễ — MMT thi công hạ tầng, kỹ thuật và nhân sự vận hành, cam kết đúng giờ khai mạc.</p>
+          <div className="hero-cta">
+            <a className="btn gold" href="#lienhe">Nhận báo giá trong 24h</a>
+            <a className="btn ghost" href="#duan">Xem dự án</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 2: Write the failing test**
+
+```jsx
+import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import EventPage from './EventPage.jsx'
+
+describe('EventPage', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => [] })
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('renders the event contact form variant and fetches event images', async () => {
+    render(<MemoryRouter><EventPage /></MemoryRouter>)
+
+    expect(screen.getByText('Loại sự kiện')).toBeInTheDocument()
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/images/events'))
+  })
+
+  it('links the closing promo to the wedding site', () => {
+    render(<MemoryRouter><EventPage /></MemoryRouter>)
+    expect(screen.getByRole('link', { name: /Khám phá MMT Wedding/i })).toHaveAttribute('href', '/tiec-cuoi')
+  })
+})
+```
+
+- [ ] **Step 3: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/pages/EventPage.test.jsx`
+Expected: FAIL (`EventPage` does not exist)
+
+- [ ] **Step 4: Create `EventPage.jsx`**
+
+```jsx
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import useScrollReveal from '../components/shared/useScrollReveal.js'
+import StatsBar from '../components/shared/StatsBar.jsx'
+import ProcessSteps from '../components/shared/ProcessSteps.jsx'
+import Quotes from '../components/shared/Quotes.jsx'
+import ContactForm from '../components/shared/ContactForm.jsx'
+import Gallery from '../components/shared/Gallery.jsx'
+import EventHero from '../components/event/EventHero.jsx'
+import GuestCalculator from '../components/event/GuestCalculator.jsx'
+import ProjectsList from '../components/event/ProjectsList.jsx'
+import ServicesGrid from '../components/event/ServicesGrid.jsx'
+import Pillars from '../components/event/Pillars.jsx'
+
+const STATS = [
+  { value: '10+', label: 'năm thi công' },
+  { value: '300+', label: 'sự kiện đã tổ chức' },
+  { value: '1.000', label: 'khách / nhà bạt lớn nhất' },
+  { value: '24h', label: 'báo giá chi tiết' },
+]
+
+const STEPS = [
+  { no: 'Bước 01', title: 'Khảo sát & tư vấn', desc: 'Xem mặt bằng thực tế, đo đạc, tư vấn phương án phù hợp ngân sách.' },
+  { no: 'Bước 02', title: 'Báo giá trong 24h', desc: 'Báo giá chi tiết từng hạng mục, không phát sinh ẩn.' },
+  { no: 'Bước 03', title: 'Thi công lắp đặt', desc: 'Dựng và chạy thử toàn bộ trước giờ G, trực suốt sự kiện.' },
+  { no: 'Bước 04', title: 'Nghiệm thu & tháo dỡ', desc: 'Bàn giao đúng cam kết, trả lại mặt bằng sạch.' },
+]
+
+const QUOTES = [
+  { text: 'Sự kiện ra quân diễn ra đúng kế hoạch từng phút. Đội MMT dựng xong từ hôm trước và có mặt từ sáng sớm xử lý âm thanh.', name: 'Đại diện ban tổ chức', meta: 'Sự kiện doanh nghiệp tại Cần Thơ' },
+  { text: 'Nhà bạt cho buổi mở bán hơn 800 khách dựng gọn trong hai ngày, che nắng tốt và rất chỉn chu trên ảnh truyền thông.', name: 'Phòng marketing chủ đầu tư', meta: 'Sự kiện mở bán bất động sản' },
+]
+
+export default function EventPage() {
+  useScrollReveal()
+  const [images, setImages] = useState([])
+
+  useEffect(() => {
+    fetch('/api/images/events')
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setImages)
+      .catch(() => setImages([]))
+  }, [])
+
+  return (
+    <main>
+      <EventHero />
+      <StatsBar items={STATS} />
+
+      <section className="blk" id="quymo">
+        <div className="sec-head rv">
+          <span className="eyebrow">Hạ tầng &amp; thiết bị sẵn có</span>
+          <h2>Bảng thông số &amp; <em>tính nhanh quy mô</em></h2>
+          <p>Chọn quy mô sự kiện dự kiến để xem phương án hạ tầng nhà bạt &amp; thiết bị tương ứng từ kho MMT.</p>
+        </div>
+        <GuestCalculator />
+      </section>
+
+      <ProjectsList />
+      <ServicesGrid images={images} />
+      <Pillars />
+
+      <ProcessSteps id="quytrinh" title={<h2>Bốn bước — cam kết <em>đúng giờ</em></h2>} steps={STEPS} />
+      <Quotes items={QUOTES} />
+
+      <section className="blk" id="lienhe" style={{ paddingTop: 0 }}>
+        <div className="contact">
+          <div className="info rv">
+            <span className="eyebrow">Liên hệ</span>
+            <h2>Cùng dựng nên<br /><em>dấu ấn của bạn.</em></h2>
+            <p>Gửi thông tin ngắn gọn — MMT phản hồi qua Zalo trong 15 phút giờ hành chính và gửi báo giá chi tiết trong 24 giờ.</p>
+            <div className="big">0939 050 550</div>
+            <p>Hotline kiêm Zalo · Cần Thơ &amp; các tỉnh miền Tây</p>
+          </div>
+          <ContactForm variant="event" />
+        </div>
+      </section>
+
+      <section className="blk" style={{ paddingTop: 0 }}>
+        <div className="sec-head rv">
+          <span className="eyebrow">Album thực tế</span>
+          <h2>Những sự kiện <em>đã dựng nên</em></h2>
+        </div>
+        <Gallery category="events" />
+      </section>
+
+      <section className="blk" style={{ paddingTop: 0 }}>
+        <div className="promo rv">
+          <div><h3>Nhà sắp có hỷ sự?</h3><p>MMT Wedding by Minh Minh Thúy — trang trí cưới hỏi trọn gói tại gia, giá công khai từ 6,9 triệu.</p></div>
+          <Link className="go" to="/tiec-cuoi">Khám phá MMT Wedding →</Link>
+        </div>
+      </section>
+    </main>
+  )
+}
+```
+
+- [ ] **Step 5: Wire it into `App.jsx`**
+
+Replace the `/su-kien` route's placeholder element with `<EventPage />` (add `import EventPage from './pages/EventPage.jsx'`).
+
+- [ ] **Step 6: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/pages/EventPage.test.jsx`
+Expected: PASS
+
+- [ ] **Step 7: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/components/event/EventHero.jsx frontend/src/pages/EventPage.jsx frontend/src/pages/EventPage.test.jsx frontend/src/App.jsx
+git commit -m "Assemble EventPage from hero, calculator, static sections, contact form, gallery"
+```
