@@ -955,3 +955,178 @@ cd D:/Job/mmt-app
 git add frontend/src/components/event/GuestCalculator.jsx frontend/src/components/event/GuestCalculator.test.jsx
 git commit -m "Add GuestCalculator with ported B2B spec thresholds"
 ```
+
+---
+
+### Task F8: Wedding tone data + ToneSelector
+
+**Files:**
+- Create: `frontend/src/data/toneData.js`
+- Create: `frontend/src/components/wedding/ToneSelector.jsx`
+- Test: `frontend/src/components/wedding/ToneSelector.test.jsx`
+
+**Interfaces:**
+- Produces: `toneData` — an object keyed `son|dao|kem|ngoc`, each `{ badge, title, desc, list: string[] }` (text only, ported verbatim from the original `toneData` JS object). `<ToneSelector imagesByTone={{ son: [url1,url2,url3], dao: [...], kem: [...], ngoc: [...] }} />` — image URLs are supplied by the caller (Task F14 wires these from real wedding photos via `data/imagePicks.js`, Task F10), keeping this component testable with plain mock URLs.
+
+- [ ] **Step 1: Create `toneData.js`**
+
+```js
+export const toneData = {
+  son: {
+    badge: 'LỄ GIA TIÊN CHUẨN LỆ XƯA',
+    title: 'Bộ Sưu Tập Tông Son — Đỏ Son Ấm Cúng',
+    desc: 'Điểm nhấn chữ Hỷ đỏ thắm, lư đồng sáng bóng kết hợp hoa lụa cao cấp. Phù hợp cho lễ Vu Quy / Tân Hôn tôn nghiêm, chuẩn mực truyền thống miền Tây.',
+    list: [
+      'Cổng hoa tươi/lụa tone Đỏ Son + Bảng tên thiết kế riêng',
+      'Bàn gia tiên phủ khăn gấm đỏ, phông rèm dệt xếp lớp',
+      'Bộ lư đồng, chân nến, khay mâm quả đồng bộ',
+      'Áo ghế nơ lụa satin đỏ cho 20 đại biểu',
+    ],
+  },
+  dao: {
+    badge: 'HỒNG PASTEL TRONG TRẺO',
+    title: 'Bộ Sưu Tập Tông Đào — Nude Hồng Nhẹ Nhàng',
+    desc: 'Sự kết hợp giữa voan tơ mềm mại, hoa lụa tông pastel trong trẻo. Mang lại cảm giác thanh lịch, hiện đại, thích hợp cho các cô dâu yêu thích phong cách Hàn Quốc.',
+    list: [
+      'Cổng hoa lụa dáng vòm tròn tone Hồng Nude',
+      'Phông gia tiên rèm voan dập ly mềm mại',
+      'Bàn hoa gia tiên trang trí nến cốc & lọ hoa cao thấp',
+      'Bộ mâm quả sơn mài tone hồng cam hiện đại',
+    ],
+  },
+  kem: {
+    badge: 'SANG TRỌNG & TỐI GIẢN',
+    title: 'Bộ Sưu Tập Tông Kem — Trắng Ánh Kim Rực Rỡ',
+    desc: 'Tông màu kem nhã nhặn tôn lên không gian nhà phố. Hệ thống đèn chuỗi ánh vàng lung linh biến khoảng sân nhỏ thành sảnh tiệc ấm cúng.',
+    list: [
+      'Cổng hoa tươi/lụa màu Trắng Kem & Lá Ánh Kim',
+      'Backdrop gia tiên viền pha lê chiếu sáng',
+      'Rèm trần & chuỗi đèn LED ánh sáng ấm',
+      'Bàn ghế Tiffany nơ lụa màu kem nhã nhặn',
+    ],
+  },
+  ngoc: {
+    badge: 'DẤU ẤN KHÁC BIỆT',
+    title: 'Bộ Sưu Tập Tông Ngọc — Xanh Lục Bảo Tinh Tế',
+    desc: 'Độc đáo, quý phái với sự kết hợp giữa màu xanh lục bảo và hoa trắng tinh khôi. Sự lựa chọn hoàn hảo cho cặp đôi muốn không gian lễ cưới mang cá tính riêng.',
+    list: [
+      'Cổng hoa thiết kế khối nổi tone Xanh Lục - Trắng',
+      'Bàn gia tiên phủ gấm màu Ngọc Lục Bảo',
+      'Phông mica/gỗ khắc tên cô dâu chú rể mạ vàng',
+      'Set hoa để bàn & nơ ghế màu xanh quý phái',
+    ],
+  },
+}
+
+export const toneOrder = ['son', 'dao', 'kem', 'ngoc']
+export const toneLabels = { son: ['Tông Son', 'Đỏ Truyền Thống'], dao: ['Tông Đào', 'Hồng Nude Pastel'], kem: ['Tông Kem', 'Trắng Ánh Kim'], ngoc: ['Tông Ngọc', 'Xanh Lục Bảo'] }
+```
+
+- [ ] **Step 2: Write the failing test**
+
+```jsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import ToneSelector from './ToneSelector.jsx'
+
+const imagesByTone = {
+  son: ['son1.jpg', 'son2.jpg', 'son3.jpg'],
+  dao: ['dao1.jpg', 'dao2.jpg', 'dao3.jpg'],
+  kem: ['kem1.jpg', 'kem2.jpg', 'kem3.jpg'],
+  ngoc: ['ngoc1.jpg', 'ngoc2.jpg', 'ngoc3.jpg'],
+}
+
+describe('ToneSelector', () => {
+  it('defaults to the Son tone', () => {
+    render(<ToneSelector imagesByTone={imagesByTone} />)
+    expect(screen.getByText('Bộ Sưu Tập Tông Son — Đỏ Son Ấm Cúng')).toBeInTheDocument()
+    expect(screen.getByAltText('Bàn Gia Tiên')).toHaveAttribute('src', 'son1.jpg')
+  })
+
+  it('switches content and active button when Đào is clicked', () => {
+    render(<ToneSelector imagesByTone={imagesByTone} />)
+    fireEvent.click(screen.getByRole('button', { name: /Tông Đào/i }))
+
+    expect(screen.getByText('Bộ Sưu Tập Tông Đào — Nude Hồng Nhẹ Nhàng')).toBeInTheDocument()
+    expect(screen.getByAltText('Bàn Gia Tiên')).toHaveAttribute('src', 'dao1.jpg')
+    expect(screen.getByRole('button', { name: /Tông Đào/i })).toHaveClass('active')
+    expect(screen.getByRole('button', { name: /Tông Son/i })).not.toHaveClass('active')
+  })
+})
+```
+
+- [ ] **Step 3: Run test to verify it fails**
+
+Run: `cd frontend && npx vitest run src/components/wedding/ToneSelector.test.jsx`
+Expected: FAIL (component does not exist)
+
+- [ ] **Step 4: Create `ToneSelector.jsx`**
+
+```jsx
+import { useState } from 'react'
+import { toneData, toneOrder, toneLabels } from '../../data/toneData.js'
+
+export default function ToneSelector({ imagesByTone }) {
+  const [active, setActive] = useState('son')
+  const data = toneData[active]
+  const images = imagesByTone[active] ?? []
+
+  return (
+    <>
+      <div className="tone-selector rv">
+        {toneOrder.map((key) => (
+          <button
+            key={key}
+            className={`tone-btn${active === key ? ' active' : ''}`}
+            onClick={() => setActive(key)}
+          >
+            <b>{toneLabels[key][0]}</b>
+            <small>{toneLabels[key][1]}</small>
+          </button>
+        ))}
+      </div>
+      <div className="tone-display-card rv">
+        <div className="tone-info">
+          <span className="badge-tone">{data.badge}</span>
+          <h3>{data.title}</h3>
+          <p>{data.desc}</p>
+          <div className="tone-features">
+            <h4>Hạng mục đi kèm nổi bật:</h4>
+            <ul>
+              {data.list.map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
+          </div>
+          <a href="#lienhe-cuoi" className="btn gold">Giữ lịch tông màu này →</a>
+        </div>
+        <div className="tone-gallery">
+          <div className="gal-item main">
+            <img src={images[0]} alt="Bàn Gia Tiên" />
+            <span className="gal-tag">Bàn Gia Tiên</span>
+          </div>
+          <div className="gal-item">
+            <img src={images[1]} alt="Cổng hoa" />
+            <span className="gal-tag">Cổng Hoa</span>
+          </div>
+          <div className="gal-item">
+            <img src={images[2]} alt="Không gian tiệc" />
+            <span className="gal-tag">Không Gian Tiệc</span>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+```
+
+- [ ] **Step 5: Run test to verify it passes**
+
+Run: `cd frontend && npx vitest run src/components/wedding/ToneSelector.test.jsx`
+Expected: PASS
+
+- [ ] **Step 6: Commit**
+
+```bash
+cd D:/Job/mmt-app
+git add frontend/src/data/toneData.js frontend/src/components/wedding/ToneSelector.jsx frontend/src/components/wedding/ToneSelector.test.jsx
+git commit -m "Add wedding tone data and ToneSelector component"
+```
