@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/mmt_event_wedding
+    url: jdbc:postgresql://localhost:5433/mmt_event_wedding
     username: postgres
     password: postgres
   jpa:
