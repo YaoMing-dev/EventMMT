@@ -21,6 +21,17 @@ and add lead capture (contact/quote forms) with email notification and a simple
 admin view. Target: run locally first; git remote (`https://github.com/YaoMing-dev/EventMMT`)
 will be added and pushed later, on request.
 
+**Hard requirement: UI/UX parity.** The rebuilt site must look and behave
+identically to `mmtevent-wedding-v3.html` — same layout, colors, typography,
+spacing, copy text, section order, and interactions (gate hover effect, scroll
+reveal, guest-count calculator, wedding tone switcher, sticky header/rail
+buttons). Only the implementation changes (React components instead of vanilla
+JS/DOM calls, `global.css` ported near-verbatim instead of one inline
+`<style>` block) and real photos replace Unsplash/gradient placeholders. The
+only intentional additions are the new Gallery/Lightbox section and the
+`/admin` page, neither of which existed before — everything else is a
+faithful port, not a redesign.
+
 ## Architecture
 
 Two separate apps in one new project folder, talking over REST:
