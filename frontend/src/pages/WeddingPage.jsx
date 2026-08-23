@@ -4,6 +4,7 @@ import ContactForm from '../components/shared/ContactForm.jsx'
 import WeddingHero from '../components/wedding/WeddingHero.jsx'
 import MomentsTimeline from '../components/wedding/MomentsTimeline.jsx'
 import WorkGallery from '../components/wedding/WorkGallery.jsx'
+import BrandCard from '../components/wedding/BrandCard.jsx'
 import NapBlock from '../components/wedding/NapBlock.jsx'
 import WeddingSchema from '../components/wedding/WeddingSchema.jsx'
 import useReveal from '../components/wedding/useReveal.js'
@@ -51,6 +52,7 @@ export default function WeddingPage() {
         </div>
       </section>
 
+      <BrandCard />
       <NapBlock />
 
       <div className="truc">

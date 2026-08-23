@@ -8,6 +8,7 @@ import HomeGate from './pages/HomeGate.jsx'
 import EventPage from './pages/EventPage.jsx'
 import WeddingPage from './pages/WeddingPage.jsx'
 import AdminPage from './pages/AdminPage.jsx'
+import useTheme from './hooks/useTheme.js'
 
 const VIEW_BY_PATH = { '/su-kien': 'event', '/tiec-cuoi': 'wedding' }
 
@@ -15,6 +16,7 @@ function Shell() {
   const location = useLocation()
   const view = VIEW_BY_PATH[location.pathname] ?? 'home'
   const isSub = view !== 'home'
+  const [theme, toggleTheme] = useTheme()
 
   useLayoutEffect(() => {
     document.body.dataset.view = view
@@ -24,7 +26,7 @@ function Shell() {
   return (
     <>
       {isSub && <Topbar view={view} />}
-      {isSub && <Header view={view} />}
+      {isSub && <Header view={view} theme={theme} onToggleTheme={toggleTheme} />}
       <Routes>
         <Route path="/" element={<HomeGate />} />
         <Route path="/su-kien" element={<EventPage />} />

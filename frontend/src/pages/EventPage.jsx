@@ -5,12 +5,15 @@ import StatsBar from '../components/shared/StatsBar.jsx'
 import ProcessSteps from '../components/shared/ProcessSteps.jsx'
 import Quotes from '../components/shared/Quotes.jsx'
 import ContactForm from '../components/shared/ContactForm.jsx'
-import Gallery from '../components/shared/Gallery.jsx'
 import EventHero from '../components/event/EventHero.jsx'
 import GuestCalculator from '../components/event/GuestCalculator.jsx'
 import ProjectsList from '../components/event/ProjectsList.jsx'
+import EventSpotlights from '../components/event/EventSpotlights.jsx'
+import PartnerMarquee from '../components/event/PartnerMarquee.jsx'
 import ServicesGrid from '../components/event/ServicesGrid.jsx'
 import Pillars from '../components/event/Pillars.jsx'
+import BiddingProcess from '../components/event/BiddingProcess.jsx'
+import EventBrandCard from '../components/event/EventBrandCard.jsx'
 import { contactInfo } from '../data/contactInfo.js'
 
 const STATS = [
@@ -47,6 +50,7 @@ export default function EventPage() {
     <main>
       <EventHero />
       <StatsBar items={STATS} />
+      <PartnerMarquee />
 
       <section className="blk" id="quymo">
         <div className="sec-head rv">
@@ -58,8 +62,10 @@ export default function EventPage() {
       </section>
 
       <ProjectsList />
+      <EventSpotlights images={images} />
       <ServicesGrid images={images} />
       <Pillars />
+      <BiddingProcess />
 
       <ProcessSteps id="quytrinh" title={<h2>Bốn bước — cam kết <em>đúng giờ</em></h2>} steps={STEPS} />
       <Quotes items={QUOTES} />
@@ -77,18 +83,12 @@ export default function EventPage() {
         </div>
       </section>
 
-      <section className="blk" style={{ paddingTop: 0 }}>
-        <div className="sec-head rv">
-          <span className="eyebrow">Album thực tế</span>
-          <h2>Những sự kiện <em>đã dựng nên</em></h2>
-        </div>
-        <Gallery category="events" />
-      </section>
+      <EventBrandCard images={images} />
 
       <section className="blk" style={{ paddingTop: 0 }}>
         <div className="promo rv">
-          <div><h3>Nhà sắp có hỷ sự?</h3><p>MMT Wedding by Minh Minh Thúy — trang trí cưới hỏi trọn gói tại gia, giá công khai từ 6,9 triệu.</p></div>
-          <Link className="go" to="/tiec-cuoi">Khám phá MMT Wedding →</Link>
+          <div><h3>Nhà sắp có hỷ sự?</h3><p>Minh Minh Thúy — trang trí cưới hỏi trọn gói tại gia, khảo sát tận nơi trước khi báo giá.</p></div>
+          <Link className="go" to="/tiec-cuoi">Khám phá Minh Minh Thúy →</Link>
         </div>
       </section>
     </main>
