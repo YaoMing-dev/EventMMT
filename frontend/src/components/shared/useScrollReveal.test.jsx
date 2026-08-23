@@ -1,20 +1,6 @@
-import { render } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { render, fireEvent } from '@testing-library/react'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import useScrollReveal from './useScrollReveal.js'
-
-let observedElements = []
-let intersectionCallback
-
-class FakeIntersectionObserver {
-  constructor(callback) {
-    intersectionCallback = callback
-  }
-  observe(el) {
-    observedElements.push(el)
-  }
-  unobserve() {}
-  disconnect() {}
-}
 
 function TestComponent() {
   useScrollReveal()
@@ -22,20 +8,44 @@ function TestComponent() {
 }
 
 describe('useScrollReveal', () => {
+  let rectSpy
+
   beforeEach(() => {
-    observedElements = []
-    global.IntersectionObserver = FakeIntersectionObserver
+    window.innerHeight = 800
+    rectSpy = vi.spyOn(Element.prototype, 'getBoundingClientRect')
   })
 
-  it('observes .rv elements and adds "in" class when intersecting', () => {
+  afterEach(() => {
+    rectSpy.mockRestore()
+  })
+
+  it('reveals an element already within the viewport as soon as it mounts', () => {
+    rectSpy.mockReturnValue({ top: 100, bottom: 200 })
+    const { getByTestId } = render(<TestComponent />)
+
+    expect(getByTestId('target').className).toContain('in')
+  })
+
+  it('leaves an off-screen element hidden until scrolling brings it into view', () => {
+    rectSpy.mockReturnValue({ top: 2000, bottom: 2100 })
     const { getByTestId } = render(<TestComponent />)
     const target = getByTestId('target')
-
-    expect(observedElements).toContain(target)
     expect(target.className).not.toContain('in')
 
-    intersectionCallback([{ target, isIntersecting: true }])
+    rectSpy.mockReturnValue({ top: 100, bottom: 200 })
+    fireEvent.scroll(window)
 
     expect(target.className).toContain('in')
+  })
+
+  it('does not depend on IntersectionObserver at all', () => {
+    const original = global.IntersectionObserver
+    delete global.IntersectionObserver
+    rectSpy.mockReturnValue({ top: 100, bottom: 200 })
+
+    const { getByTestId } = render(<TestComponent />)
+    expect(getByTestId('target').className).toContain('in')
+
+    global.IntersectionObserver = original
   })
 })
