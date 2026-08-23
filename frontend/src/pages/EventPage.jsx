@@ -85,7 +85,7 @@ export default function EventPage() {
 
       <EventBrandCard images={images} />
 
-      <section className="blk" style={{ paddingTop: 0 }}>
+      <section className="blk">
         <div className="promo rv">
           <div><h3>Nhà sắp có hỷ sự?</h3><p>Minh Minh Thúy — trang trí cưới hỏi trọn gói tại gia, khảo sát tận nơi trước khi báo giá.</p></div>
           <Link className="go" to="/tiec-cuoi">Khám phá Minh Minh Thúy →</Link>

@@ -348,7 +348,7 @@ section.blk{max-width:1240px;margin:0 auto;padding:96px 28px}
    Đối xứng với .hieu bên trang cưới hỏi (wedding.css): chữ trái, ảnh phải,
    ảnh ẩn trên điện thoại. Dùng token dùng chung (--accent/--gold/--ink…)
    nên tự đổi màu theo body[data-view], không cần token riêng. */
-.ev-brand-blk{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ev-brand-blk{background:var(--panel);border:1px solid var(--line);border-radius:18px}
 .ev-brand{
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,.62fr);
