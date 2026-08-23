@@ -20,8 +20,10 @@ describe('ContactForm', () => {
   it('renders wedding-specific fields for variant="wedding"', () => {
     render(<ContactForm variant="wedding" />)
     expect(screen.getByText('Loại lễ')).toBeInTheDocument()
-    expect(screen.getByText('Tông màu yêu thích')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Giữ lịch/i })).toBeInTheDocument()
+    // Trang cưới hỏi không còn chia theo tông màu
+    expect(screen.queryByText('Tông màu yêu thích')).not.toBeInTheDocument()
+    expect(screen.queryByText('Số khách (ước tính)')).not.toBeInTheDocument()
   })
 
   it('shows an inline error and does not call fetch when phone is blank', () => {

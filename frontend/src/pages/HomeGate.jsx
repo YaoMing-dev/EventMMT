@@ -30,17 +30,17 @@ export default function HomeGate() {
         <Link className="side wd" to="/tiec-cuoi">
           <div
             className="bgart"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200')" }}
+            style={{ backgroundImage: "url('/anh/congcuoi10.webp')" }}
           />
           <div className="inner">
-            <span className="kicker">Trang trí cưới hỏi trọn gói</span>
-            <h1>TIỆC CƯỚI &amp; GIA ĐÌNH</h1>
-            <p>Cổng hoa, bàn gia tiên, rèm đèn và đãi tiệc tại nhà — giá công khai từ 6,9 triệu.</p>
+            <span className="kicker">Cưới hỏi trọn gói</span>
+            <h1>MINH MINH THÚY</h1>
+            <p>Bàn thờ gia tiên, mâm quả, cổng hoa, rạp cưới và bàn ghế đãi tiệc — khảo sát tận nhà tại Cần Thơ.</p>
             <div className="metrics">
-              <span><b>4</b> Bộ sưu tập tông màu</span>
-              <span><b>6,9tr</b> Gói trọn gói từ</span>
+              <span><b>2018</b> Bắt đầu tại Cần Thơ</span>
+              <span><b>Tận nơi</b> Khảo sát trước khi báo giá</span>
             </div>
-            <span className="go">Khám phá MMT Wedding →</span>
+            <span className="go">Khám phá Minh Minh Thúy →</span>
           </div>
         </Link>
       </div>

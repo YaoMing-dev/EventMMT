@@ -29,14 +29,20 @@ public class EmailService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(toEmail);
             message.setSubject("MMT - Lead moi: " + lead.getCategory());
-            message.setText(
-                    "Loai: " + lead.getCategory() +
-                    "\nHang muc: " + lead.getSubtype() +
-                    "\nNgay du kien: " + lead.getEventDate() +
-                    "\nSo khach: " + lead.getGuestCount() +
-                    "\nTong mau: " + lead.getToneColor() +
-                    "\nSDT: " + lead.getPhone()
-            );
+            // Lead cuoi hoi khong co so khach, va tu ban thiet ke moi thi cung
+            // khong co tong mau. Bo dong rong thay vi in "null" vao email.
+            StringBuilder body = new StringBuilder()
+                    .append("Loai: ").append(lead.getCategory())
+                    .append("\nHang muc: ").append(lead.getSubtype())
+                    .append("\nNgay du kien: ").append(lead.getEventDate());
+            if (lead.getGuestCount() != null) {
+                body.append("\nSo khach: ").append(lead.getGuestCount());
+            }
+            if (lead.getToneColor() != null && !lead.getToneColor().isBlank()) {
+                body.append("\nTong mau: ").append(lead.getToneColor());
+            }
+            body.append("\nSDT: ").append(lead.getPhone());
+            message.setText(body.toString());
             mailSender.send(message);
         } catch (Exception e) {
             log.error("Failed to send lead notification email for lead phone={}", lead.getPhone(), e);

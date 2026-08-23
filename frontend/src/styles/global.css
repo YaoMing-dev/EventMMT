@@ -4,11 +4,12 @@
   --body:'Be Vietnam Pro', system-ui, sans-serif;
   --r:10px;
   /* mặc định (wedding-light) */
-  --bg:#FAF6EF; --panel:#FFFFFF; --ink:#241A17; --muted:#7B6C64; --line:rgba(60,35,25,.13);
-  --accent:#8C1F26; --accent-deep:#5E0F14; --gold:#B98A3C; --gold-soft:#F3E8D4;
+  --bg:#FAF6EE; --panel:#FFFFFF; --ink:#2A2118; --muted:#6B5C48; --line:rgba(185,138,60,.28);
+  --accent:#8E2B24; --accent-deep:#5E0F14; --gold:#B98A3C; --gold-soft:#F3E8D4;
   --stripe-a:#A6423C; --stripe-b:#FBF3EA;
   --cross:#173FAE;
 }
+body[data-view="wedding"]{--display:'Cormorant Garamond', Georgia, serif}
 body[data-view="event"]{
   --bg:#0C0F16; --panel:#131824; --ink:#F2F4F8; --muted:#98A0AE; --line:rgba(255,255,255,.12);
   --accent:#5B84FF; --accent-deep:#173FAE; --gold:#E8B54D; --gold-soft:rgba(232,181,77,.12);
@@ -239,6 +240,7 @@ section.blk{max-width:1240px;margin:0 auto;padding:96px 28px}
 .cform input:focus,.cform select:focus{outline:2px solid var(--gold);outline-offset:0;border-color:transparent}
 .cform .btn{width:100%;margin-top:26px}
 .cform .note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px}
+.cform .note.loi-nhap{color:var(--accent);text-align:left}
 @media (max-width:860px){.contact{grid-template-columns:1fr}}
 
 /* lối rẽ */

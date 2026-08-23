@@ -14,10 +14,10 @@ export default function Header({ view }) {
         ['#lienhe', 'Liên hệ'],
       ]
     : [
-        ['#tongmau', 'Bộ sưu tập'],
-        ['#banggia', 'Bảng giá'],
-        ['#album', 'Album'],
-        ['#lienhe-cuoi', 'Liên hệ'],
+        ['#dich-vu', 'Dịch vụ'],
+        ['#cong-trinh', 'Công trình'],
+        ['#cach-dat', 'Cách đặt'],
+        ['#lien-he', 'Liên hệ'],
       ]
 
   return (
@@ -26,8 +26,8 @@ export default function Header({ view }) {
         <Link className="logo" to="/">
           <img className="mark" src="/logo.jpg" alt="MMT" />
           <span>
-            <b>MMT {isEvent ? 'Event' : 'Wedding'}</b>
-            <small>{isEvent ? 'Tổ chức sự kiện miền Tây' : 'by Minh Minh Thúy'}</small>
+            <b>{isEvent ? 'MMT Event' : 'Minh Minh Thúy'}</b>
+            <small>{isEvent ? 'Tổ chức sự kiện miền Tây' : 'Cưới hỏi trọn gói · Cần Thơ'}</small>
           </span>
         </Link>
         <nav>
@@ -37,11 +37,11 @@ export default function Header({ view }) {
         </nav>
         <div className="nav-right">
           {isEvent ? (
-            <Link className="crosslink" to="/tiec-cuoi">Tiệc cưới — Đám hỏi</Link>
+            <Link className="crosslink" to="/tiec-cuoi">Cưới hỏi — Minh Minh Thúy</Link>
           ) : (
             <Link className="crosslink" to="/su-kien">Sự kiện doanh nghiệp</Link>
           )}
-          <a className="btn gold" href={isEvent ? '#lienhe' : '#lienhe-cuoi'}>Nhận báo giá</a>
+          <a className="btn gold" href={isEvent ? '#lienhe' : '#cach-dat'}>Nhận báo giá</a>
         </div>
         <button
           className="menu-toggle"
@@ -60,7 +60,7 @@ export default function Header({ view }) {
             ))}
           </ul>
           {isEvent ? (
-            <Link className="crosslink" to="/tiec-cuoi" onClick={() => setMenuOpen(false)}>Tiệc cưới — Đám hỏi</Link>
+            <Link className="crosslink" to="/tiec-cuoi" onClick={() => setMenuOpen(false)}>Cưới hỏi — Minh Minh Thúy</Link>
           ) : (
             <Link className="crosslink" to="/su-kien" onClick={() => setMenuOpen(false)}>Sự kiện doanh nghiệp</Link>
           )}

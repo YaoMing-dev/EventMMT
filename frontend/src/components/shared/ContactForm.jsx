@@ -14,20 +14,11 @@ const WEDDING_TYPES = [
   'Tiệc báo hỷ tại nhà',
 ]
 
-const TONE_OPTIONS = [
-  ['son', 'Son — đỏ truyền thống'],
-  ['dao', 'Đào — hồng hiện đại'],
-  ['kem', 'Kem — tối giản'],
-  ['ngoc', 'Ngọc — xanh khác biệt'],
-  ['', 'Chưa biết, cần tư vấn'],
-]
-
 export default function ContactForm({ variant }) {
   const isEvent = variant === 'event'
   const [subtype, setSubtype] = useState(isEvent ? EVENT_TYPES[0] : WEDDING_TYPES[0])
   const [eventDate, setEventDate] = useState('')
   const [guestCount, setGuestCount] = useState('')
-  const [toneColor, setToneColor] = useState(TONE_OPTIONS[0][0])
   const [phone, setPhone] = useState('')
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | submitting | success
@@ -49,7 +40,9 @@ export default function ContactForm({ variant }) {
       subtype,
       eventDate: eventDate || null,
       guestCount: isEvent ? (guestCount ? Number(guestCount) : null) : null,
-      toneColor: isEvent ? null : (toneColor || null),
+      // Trang cưới hỏi không còn chia theo tông màu — nội dung chia theo
+      // thời điểm trong ngày. Cột toneColor giữ nguyên ở backend, để trống.
+      toneColor: null,
       phone,
     }
 
@@ -74,7 +67,7 @@ export default function ContactForm({ variant }) {
   }
 
   return (
-    <form className="cform rv" onSubmit={handleSubmit}>
+    <form className={isEvent ? 'cform rv' : 'cform'} onSubmit={handleSubmit}>
       <label>{isEvent ? 'Loại sự kiện' : 'Loại lễ'}</label>
       <select value={subtype} onChange={(e) => setSubtype(e.target.value)}>
         {(isEvent ? EVENT_TYPES : WEDDING_TYPES).map((t) => <option key={t} value={t}>{t}</option>)}
@@ -82,19 +75,12 @@ export default function ContactForm({ variant }) {
 
       <label htmlFor={`${variant}-event-date`}>{isEvent ? 'Ngày dự kiến' : 'Ngày lành dự kiến'}</label>
       <input id={`${variant}-event-date`} type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
-      {errors.eventDate && <div className="note" style={{ color: 'var(--accent)' }}>{errors.eventDate}</div>}
+      {errors.eventDate && <div className="note loi-nhap">{errors.eventDate}</div>}
 
-      {isEvent ? (
+      {isEvent && (
         <>
           <label>Số khách (ước tính)</label>
           <input type="number" placeholder="Ví dụ: 300" value={guestCount} onChange={(e) => setGuestCount(e.target.value)} />
-        </>
-      ) : (
-        <>
-          <label>Tông màu yêu thích</label>
-          <select value={toneColor} onChange={(e) => setToneColor(e.target.value)}>
-            {TONE_OPTIONS.map(([value, label]) => <option key={label} value={value}>{label}</option>)}
-          </select>
         </>
       )}
 
@@ -105,12 +91,12 @@ export default function ContactForm({ variant }) {
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
-      {errors.phone && <div className="note" style={{ color: 'var(--accent)' }}>{errors.phone}</div>}
-      {errors.general && <div className="note" style={{ color: 'var(--accent)' }}>{errors.general}</div>}
+      {errors.phone && <div className="note loi-nhap">{errors.phone}</div>}
+      {errors.general && <div className="note loi-nhap">{errors.general}</div>}
       {Object.entries(errors)
         .filter(([field]) => field !== 'phone' && field !== 'eventDate' && field !== 'general')
         .map(([field, message]) => (
-          <div className="note" style={{ color: 'var(--accent)' }} key={field}>{message}</div>
+          <div className="note loi-nhap" key={field}>{message}</div>
         ))}
 
       <button className="btn gold" type="submit" disabled={status === 'submitting'}>
