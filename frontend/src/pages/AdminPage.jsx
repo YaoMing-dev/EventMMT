@@ -28,6 +28,14 @@ export default function AdminPage() {
     }
   }
 
+  function handleLogout() {
+    setLeads(null)
+    setAuthHeader('')
+    setUsername('')
+    setPassword('')
+    setError('')
+  }
+
   async function handleDelete(id) {
     if (!window.confirm('Xoá yêu cầu này?')) return
     try {
@@ -48,7 +56,10 @@ export default function AdminPage() {
   if (leads) {
     return (
       <main style={{ padding: 40, maxWidth: 1080, margin: '0 auto' }}>
-        <h1>Danh sách yêu cầu báo giá</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Danh sách yêu cầu báo giá</h1>
+          <button type="button" onClick={handleLogout} style={{ cursor: 'pointer' }}>Đăng xuất</button>
+        </div>
         {error && <p style={{ color: 'var(--accent)' }}>{error}</p>}
         <table style={{ width: '100%', marginTop: 24, borderCollapse: 'collapse' }}>
           <thead>

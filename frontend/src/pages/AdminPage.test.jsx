@@ -41,4 +41,54 @@ describe('AdminPage', () => {
 
     expect(await screen.findByText(/Sai tài khoản hoặc mật khẩu/i)).toBeInTheDocument()
   })
+
+  it('logging out clears the session and returns to the login form', async () => {
+    global.fetch.mockResolvedValueOnce({
+      status: 200,
+      json: async () => ([
+        { id: 1, category: 'EVENT', subtype: 'Khai truong', eventDate: '2026-08-01', guestCount: 300, toneColor: null, phone: '0900000001', createdAt: '2026-07-28T00:00:00Z' },
+      ]),
+    })
+
+    render(<AdminPage />)
+    fireEvent.change(screen.getByLabelText(/Tài khoản/i), { target: { value: 'admin' } })
+    fireEvent.change(screen.getByLabelText(/Mật khẩu/i), { target: { value: 'changeme' } })
+    fireEvent.click(screen.getByRole('button', { name: /Đăng nhập/i }))
+    await screen.findByText('0900000001')
+
+    fireEvent.click(screen.getByRole('button', { name: /Đăng xuất/i }))
+
+    expect(screen.getByText('Đăng nhập Admin')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Tài khoản/i)).toHaveValue('')
+  })
+
+  it('deleting a lead calls the DELETE endpoint with the stored auth header and removes the row', async () => {
+    global.fetch
+      .mockResolvedValueOnce({
+        status: 200,
+        json: async () => ([
+          { id: 1, category: 'EVENT', subtype: 'Khai truong', eventDate: '2026-08-01', guestCount: 300, toneColor: null, phone: '0900000001', createdAt: '2026-07-28T00:00:00Z' },
+        ]),
+      })
+      .mockResolvedValueOnce({ ok: true })
+
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+    render(<AdminPage />)
+    fireEvent.change(screen.getByLabelText(/Tài khoản/i), { target: { value: 'admin' } })
+    fireEvent.change(screen.getByLabelText(/Mật khẩu/i), { target: { value: 'changeme' } })
+    fireEvent.click(screen.getByRole('button', { name: /Đăng nhập/i }))
+    await screen.findByText('0900000001')
+
+    fireEvent.click(screen.getByRole('button', { name: /Xoá/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
+    const [url, options] = global.fetch.mock.calls[1]
+    expect(url).toBe('/api/admin/leads/1')
+    expect(options.method).toBe('DELETE')
+    expect(options.headers.Authorization).toBe(`Basic ${btoa('admin:changeme')}`)
+    expect(screen.queryByText('0900000001')).not.toBeInTheDocument()
+
+    confirmSpy.mockRestore()
+  })
 })
