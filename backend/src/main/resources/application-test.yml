@@ -13,12 +13,10 @@ spring:
     user:
       name: admin
       password: test123
-  mail:
-    host: localhost
-    port: 3025
-
 app:
   images:
     base-path: ${java.io.tmpdir}
   notify:
     to-email: test@example.com
+  resend:
+    api-key: test-key
