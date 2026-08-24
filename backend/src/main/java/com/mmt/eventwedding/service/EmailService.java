@@ -25,11 +25,9 @@ public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     private static final URI RESEND_API_URL = URI.create("https://api.resend.com/emails");
-    // Resend chi cho gui bang domain da xac minh; chua xac minh minhminhthuy.io.vn
-    // nen dung sender test cua Resend — chi gui toi duoc dia chi da dang ky tai
-    // khoan Resend (tuc NOTIFY_TO_EMAIL). Mail xac nhan cho khach (dia chi bat
-    // ky) se can xac minh domain moi gui duoc ra ngoai.
-    private static final String FROM_ADDRESS = "MMT <onboarding@resend.dev>";
+    // minhminhthuy.io.vn da xac minh voi Resend (DKIM/SPF/DMARC) — gui duoc
+    // toi bat ky dia chi nao, khong con gioi han o che do test.
+    private static final String FROM_ADDRESS = "MMT <noreply@minhminhthuy.io.vn>";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private HttpClient httpClient = HttpClient.newBuilder()
