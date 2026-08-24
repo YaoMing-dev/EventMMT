@@ -37,7 +37,7 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: FRONTEND_ORIGIN
-        value: https://mmt-frontend-5in5.onrender.com
+        value: https://mmt-frontend-5in5.onrender.com,https://minhminhthuy.io.vn,https://www.minhminhthuy.io.vn
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD
