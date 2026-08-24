@@ -13,8 +13,16 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // .trim() tren tung phan tu — FRONTEND_ORIGIN la danh sach nhieu domain
+        // cach nhau boi dau phay, de dan du khoang trang khi paste vao Render
+        // dashboard va lam sai lech so khop origin (Spring so khop tuyet doi,
+        // khong tu trim).
+        String[] origins = java.util.Arrays.stream(allowedOrigin.split(","))
+                .map(String::trim)
+                .filter(o -> !o.isEmpty())
+                .toArray(String[]::new);
         registry.addMapping("/api/**")
-                .allowedOrigins(allowedOrigin.split(","))
+                .allowedOrigins(origins)
                 .allowedMethods("GET", "POST", "OPTIONS")
                 .allowedHeaders("*");
     }
