@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -139,5 +140,16 @@ class ChatServiceTest {
         String reply = service.getReply("EVENT", List.of(new ChatTurn("user", "Xin chao")));
 
         assertThat(reply).isEqualTo(ChatService.FALLBACK_REPLY);
+    }
+
+    @Test
+    void warnIfApiKeyMissingDoesNotThrowForBlankOrPresentKey() {
+        ChatService blankKeyService = new ChatService();
+        ReflectionTestUtils.setField(blankKeyService, "apiKey", "");
+        assertThatCode(blankKeyService::warnIfApiKeyMissing).doesNotThrowAnyException();
+
+        ChatService presentKeyService = new ChatService();
+        ReflectionTestUtils.setField(presentKeyService, "apiKey", "real-key");
+        assertThatCode(presentKeyService::warnIfApiKeyMissing).doesNotThrowAnyException();
     }
 }

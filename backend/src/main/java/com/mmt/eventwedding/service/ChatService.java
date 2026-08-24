@@ -3,6 +3,7 @@ package com.mmt.eventwedding.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mmt.eventwedding.dto.ChatTurn;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,6 +71,13 @@ public class ChatService {
 
     @Value("${app.gemini.model}")
     private String model;
+
+    @PostConstruct
+    void warnIfApiKeyMissing() {
+        if (apiKey == null || apiKey.isBlank()) {
+            log.warn("GEMINI_API_KEY chua duoc cau hinh — chatbot se luon tra loi fallback.");
+        }
+    }
 
     Map<String, Object> buildPayload(String pageContext, List<ChatTurn> history) {
         String systemPrompt = "WEDDING".equals(pageContext) ? WEDDING_PROMPT : EVENT_PROMPT;

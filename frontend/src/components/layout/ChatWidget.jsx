@@ -57,10 +57,10 @@ export default function ChatWidget({ view }) {
         const data = await response.json()
         setMessages((current) => [...current, { role: 'model', text: data.reply }])
       } else {
-        setMessages((current) => [...current, { role: 'model', text: FALLBACK_REPLY }])
+        setMessages((current) => [...current, { role: 'model', text: FALLBACK_REPLY, fallback: true }])
       }
     } catch {
-      setMessages((current) => [...current, { role: 'model', text: FALLBACK_REPLY }])
+      setMessages((current) => [...current, { role: 'model', text: FALLBACK_REPLY, fallback: true }])
     } finally {
       setLoading(false)
     }
@@ -74,7 +74,7 @@ export default function ChatWidget({ view }) {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? 'Đóng chat tư vấn' : 'Mở chat tư vấn'}
       >
-        {open ? '✕' : 'Chat'}
+        {open ? '✕' : 'Hỏi đáp'}
       </button>
 
       {open && (
@@ -82,7 +82,15 @@ export default function ChatWidget({ view }) {
           <div className="chatw-head">Tư vấn {info.brand}</div>
           <div className="chatw-list" ref={listRef}>
             {messages.map((m, i) => (
-              <div key={i} className={`chatw-msg ${m.role}`}>{m.text}</div>
+              <div key={i} className={`chatw-msg ${m.role}`}>
+                {m.text}
+                {m.fallback && (
+                  <>
+                    {' '}
+                    <a href={info.zaloUrl} target="_blank" rel="noopener noreferrer">Nhắn Zalo</a>
+                  </>
+                )}
+              </div>
             ))}
             {loading && <div className="chatw-msg model chatw-typing">Đang nhập...</div>}
           </div>

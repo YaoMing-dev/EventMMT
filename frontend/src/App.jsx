@@ -36,7 +36,7 @@ function Shell() {
       </Routes>
       {isSub && <Footer view={view} />}
       {isSub && <RailButtons view={view} />}
-      {isSub && <ChatWidget view={view} />}
+      {isSub && <ChatWidget key={view} view={view} />}
     </>
   )
 }

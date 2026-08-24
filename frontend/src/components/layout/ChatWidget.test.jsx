@@ -95,4 +95,41 @@ describe('ChatWidget', () => {
 
     expect(global.fetch).not.toHaveBeenCalled()
   })
+
+  it('shows a Zalo link alongside the fallback message when the server responds with a non-ok status', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: false, status: 500 })
+    render(<ChatWidget view="event" />)
+    fireEvent.click(screen.getByRole('button', { name: /Mở chat tư vấn/i }))
+
+    fireEvent.change(screen.getByLabelText(/Nhập câu hỏi cho chatbot/i), { target: { value: 'Xin chao' } })
+    fireEvent.click(screen.getByRole('button', { name: /Gửi/i }))
+
+    expect(await screen.findByText(/hệ thống tư vấn đang bận/i)).toBeInTheDocument()
+    const zaloLink = screen.getByRole('link', { name: /Nhắn Zalo/i })
+    expect(zaloLink).toHaveAttribute('href', 'https://zalo.me/84939050550')
+  })
+
+  it('shows a Zalo link alongside the fallback message when both fetch attempts fail (wedding view)', async () => {
+    global.fetch.mockRejectedValue(new TypeError('Failed to fetch'))
+    render(<ChatWidget view="wedding" />)
+    fireEvent.click(screen.getByRole('button', { name: /Mở chat tư vấn/i }))
+
+    fireEvent.change(screen.getByLabelText(/Nhập câu hỏi cho chatbot/i), { target: { value: 'Con lich khong?' } })
+    fireEvent.click(screen.getByRole('button', { name: /Gửi/i }))
+
+    expect(await screen.findByText(/hệ thống tư vấn đang bận/i)).toBeInTheDocument()
+    const zaloLink = screen.getByRole('link', { name: /Nhắn Zalo/i })
+    expect(zaloLink).toHaveAttribute('href', 'https://zalo.me/84907623450')
+  })
+
+  it('resets to a fresh greeting when remounted with a different view (simulates event<->wedding navigation)', () => {
+    const { rerender } = render(<ChatWidget key="event" view="event" />)
+    fireEvent.click(screen.getByRole('button', { name: /Mở chat tư vấn/i }))
+    expect(screen.getByText(/tổ chức sự kiện, khai trương, hội nghị/i)).toBeInTheDocument()
+
+    rerender(<ChatWidget key="wedding" view="wedding" />)
+    fireEvent.click(screen.getByRole('button', { name: /Mở chat tư vấn/i }))
+    expect(screen.getByText(/Bạn cần hỗ trợ về lễ cưới hỏi nào ạ/i)).toBeInTheDocument()
+    expect(screen.queryByText(/tổ chức sự kiện, khai trương, hội nghị/i)).not.toBeInTheDocument()
+  })
 })
