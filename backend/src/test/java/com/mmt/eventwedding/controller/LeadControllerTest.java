@@ -36,7 +36,7 @@ class LeadControllerTest {
     @Test
     void createLeadReturns201() throws Exception {
         LeadResponse response = new LeadResponse(
-                1L, LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", Instant.now());
+                1L, LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null, Instant.now());
         when(leadService.createLead(any())).thenReturn(response);
 
         String body = """

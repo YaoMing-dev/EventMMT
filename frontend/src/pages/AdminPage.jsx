@@ -39,6 +39,7 @@ export default function AdminPage() {
               <th>Số khách</th>
               <th>Tông màu</th>
               <th>Điện thoại</th>
+              <th>Email</th>
               <th>Tạo lúc</th>
             </tr>
           </thead>
@@ -51,6 +52,7 @@ export default function AdminPage() {
                 <td>{lead.guestCount ?? '—'}</td>
                 <td>{lead.toneColor ?? '—'}</td>
                 <td>{lead.phone}</td>
+                <td>{lead.email ?? '—'}</td>
                 <td>{lead.createdAt}</td>
               </tr>
             ))}

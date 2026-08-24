@@ -1,6 +1,7 @@
 package com.mmt.eventwedding.dto;
 
 import com.mmt.eventwedding.model.LeadCategory;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,5 +16,8 @@ public record LeadRequest(
         String toneColor,
         @NotBlank(message = "Vui long nhap so dien thoai")
         @Pattern(regexp = "^[0-9 +()-]{8,15}$", message = "So dien thoai khong hop le")
-        String phone
+        String phone,
+        // Khong bat buoc — khach chi de lai neu muon nhan mail xac nhan.
+        @Email(message = "Email khong hop le")
+        String email
 ) {}

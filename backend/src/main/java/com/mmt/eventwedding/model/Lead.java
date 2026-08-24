@@ -29,6 +29,8 @@ public class Lead {
     @Column(nullable = false)
     private String phone;
 
+    private String email;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -37,13 +39,14 @@ public class Lead {
     }
 
     public Lead(LeadCategory category, String subtype, LocalDate eventDate,
-                Integer guestCount, String toneColor, String phone) {
+                Integer guestCount, String toneColor, String phone, String email) {
         this.category = category;
         this.subtype = subtype;
         this.eventDate = eventDate;
         this.guestCount = guestCount;
         this.toneColor = toneColor;
         this.phone = phone;
+        this.email = email;
     }
 
     @PrePersist
@@ -58,5 +61,6 @@ public class Lead {
     public Integer getGuestCount() { return guestCount; }
     public String getToneColor() { return toneColor; }
     public String getPhone() { return phone; }
+    public String getEmail() { return email; }
     public Instant getCreatedAt() { return createdAt; }
 }

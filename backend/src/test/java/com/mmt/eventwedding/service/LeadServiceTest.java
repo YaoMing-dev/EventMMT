@@ -25,13 +25,13 @@ class LeadServiceTest {
         EmailService emailService = mock(EmailService.class);
         LeadService service = new LeadService(repository, emailService);
 
-        Lead saved = new Lead(LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001");
+        Lead saved = new Lead(LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null);
         ReflectionTestUtils.setField(saved, "id", 42L);
         ReflectionTestUtils.setField(saved, "createdAt", Instant.parse("2026-07-28T00:00:00Z"));
         when(repository.save(any(Lead.class))).thenReturn(saved);
 
         LeadRequest request = new LeadRequest(
-                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001");
+                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null);
 
         LeadResponse response = service.createLead(request);
 
@@ -40,9 +40,30 @@ class LeadServiceTest {
         assertThat(captor.getValue().getPhone()).isEqualTo("0900000001");
 
         verify(emailService).sendNewLeadNotification(saved);
+        verify(emailService, never()).sendCustomerConfirmation(any());
 
         assertThat(response.id()).isEqualTo(42L);
         assertThat(response.phone()).isEqualTo("0900000001");
+    }
+
+    @Test
+    void createLeadWithEmailAlsoSendsCustomerConfirmation() {
+        LeadRepository repository = mock(LeadRepository.class);
+        EmailService emailService = mock(EmailService.class);
+        LeadService service = new LeadService(repository, emailService);
+
+        Lead saved = new Lead(LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, null, "0900000002", "khach@example.com");
+        ReflectionTestUtils.setField(saved, "id", 43L);
+        ReflectionTestUtils.setField(saved, "createdAt", Instant.parse("2026-07-28T00:00:00Z"));
+        when(repository.save(any(Lead.class))).thenReturn(saved);
+
+        LeadRequest request = new LeadRequest(
+                LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, null, "0900000002", "khach@example.com");
+
+        LeadResponse response = service.createLead(request);
+
+        verify(emailService).sendCustomerConfirmation(saved);
+        assertThat(response.email()).isEqualTo("khach@example.com");
     }
 
     @Test
@@ -51,7 +72,7 @@ class LeadServiceTest {
         EmailService emailService = mock(EmailService.class);
         LeadService service = new LeadService(repository, emailService);
 
-        Lead lead = new Lead(LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, "son", "0900000002");
+        Lead lead = new Lead(LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, "son", "0900000002", null);
         ReflectionTestUtils.setField(lead, "id", 1L);
         when(repository.findAllByOrderByCreatedAtDesc()).thenReturn(List.of(lead));
 

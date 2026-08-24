@@ -33,7 +33,7 @@ class LeadRequestValidationTest {
     @Test
     void validRequestHasNoViolations() {
         LeadRequest request = new LeadRequest(
-                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001");
+                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null);
 
         Set<ConstraintViolation<LeadRequest>> violations = validator.validate(request);
 
@@ -41,9 +41,31 @@ class LeadRequestValidationTest {
     }
 
     @Test
+    void validRequestWithEmailHasNoViolations() {
+        LeadRequest request = new LeadRequest(
+                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", "khach@example.com");
+
+        Set<ConstraintViolation<LeadRequest>> violations = validator.validate(request);
+
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void malformedEmailFailsValidation() {
+        LeadRequest request = new LeadRequest(
+                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", "khong-phai-email");
+
+        Set<ConstraintViolation<LeadRequest>> violations = validator.validate(request);
+
+        assertThat(violations)
+                .extracting(v -> v.getPropertyPath().toString())
+                .contains("email");
+    }
+
+    @Test
     void blankPhoneFailsValidation() {
         LeadRequest request = new LeadRequest(
-                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "");
+                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "", null);
 
         Set<ConstraintViolation<LeadRequest>> violations = validator.validate(request);
 
@@ -55,7 +77,7 @@ class LeadRequestValidationTest {
     @Test
     void missingCategoryFailsValidation() {
         LeadRequest request = new LeadRequest(
-                null, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001");
+                null, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null);
 
         Set<ConstraintViolation<LeadRequest>> violations = validator.validate(request);
 

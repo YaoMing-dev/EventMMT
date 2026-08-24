@@ -20,6 +20,7 @@ export default function ContactForm({ variant }) {
   const [eventDate, setEventDate] = useState('')
   const [guestCount, setGuestCount] = useState('')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | submitting | success
 
@@ -44,6 +45,7 @@ export default function ContactForm({ variant }) {
       // thời điểm trong ngày. Cột toneColor giữ nguyên ở backend, để trống.
       toneColor: null,
       phone,
+      email: email.trim() || null,
     }
 
     try {
@@ -55,6 +57,7 @@ export default function ContactForm({ variant }) {
       if (response.ok) {
         setStatus('success')
         setPhone('')
+        setEmail('')
       } else {
         const fieldErrors = await response.json()
         setErrors(fieldErrors)
@@ -92,9 +95,19 @@ export default function ContactForm({ variant }) {
         onChange={(e) => setPhone(e.target.value)}
       />
       {errors.phone && <div className="note loi-nhap">{errors.phone}</div>}
+
+      <label>Email (không bắt buộc)</label>
+      <input
+        type="email"
+        placeholder="Để MMT gửi mail xác nhận"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      {errors.email && <div className="note loi-nhap">{errors.email}</div>}
+
       {errors.general && <div className="note loi-nhap">{errors.general}</div>}
       {Object.entries(errors)
-        .filter(([field]) => field !== 'phone' && field !== 'eventDate' && field !== 'general')
+        .filter(([field]) => field !== 'phone' && field !== 'eventDate' && field !== 'email' && field !== 'general')
         .map(([field, message]) => (
           <div className="note loi-nhap" key={field}>{message}</div>
         ))}
@@ -104,7 +117,7 @@ export default function ContactForm({ variant }) {
       </button>
 
       {status === 'success' && <div className="note">Đã gửi yêu cầu — MMT sẽ liên hệ lại sớm nhất.</div>}
-      <div className="note">Chỉ 4 thông tin — không cần điền dài dòng.</div>
+      <div className="note">Chỉ vài thông tin — không cần điền dài dòng.</div>
     </form>
   )
 }

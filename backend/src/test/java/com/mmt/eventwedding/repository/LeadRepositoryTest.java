@@ -20,10 +20,10 @@ class LeadRepositoryTest {
     @Test
     void savesAndOrdersByCreatedAtDesc() throws InterruptedException {
         Lead first = leadRepository.save(new Lead(
-                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001"));
+                LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null));
         Thread.sleep(5);
         Lead second = leadRepository.save(new Lead(
-                LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, "son", "0900000002"));
+                LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, "son", "0900000002", "khach@example.com"));
 
         List<Lead> all = leadRepository.findAllByOrderByCreatedAtDesc();
 
@@ -33,5 +33,7 @@ class LeadRepositoryTest {
         assertThat(all.get(0).getCreatedAt()).isNotNull();
         assertThat(first.getGuestCount()).isEqualTo(300);
         assertThat(second.getToneColor()).isEqualTo("son");
+        assertThat(second.getEmail()).isEqualTo("khach@example.com");
+        assertThat(first.getEmail()).isNull();
     }
 }

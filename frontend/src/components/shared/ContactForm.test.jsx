@@ -58,8 +58,23 @@ describe('ContactForm', () => {
     expect(body.category).toBe('EVENT')
     expect(body.phone).toBe('0900000001')
     expect(body.eventDate).toBe('2026-08-01')
+    expect(body.email).toBeNull()
 
     expect(await screen.findByText(/Đã gửi yêu cầu/i)).toBeInTheDocument()
+  })
+
+  it('is optional — sends null when left blank, and includes it trimmed when filled in', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true, status: 201, json: async () => ({ id: 1 }) })
+    render(<ContactForm variant="wedding" />)
+
+    fireEvent.change(screen.getByLabelText(/Ngày lành dự kiến/i), { target: { value: '2026-09-01' } })
+    fireEvent.change(screen.getAllByPlaceholderText(/Để MMT gọi lại tư vấn/i)[0], { target: { value: '0900000001' } })
+    fireEvent.change(screen.getByPlaceholderText(/Để MMT gửi mail xác nhận/i), { target: { value: '  khach@example.com  ' } })
+    fireEvent.click(screen.getByRole('button', { name: /Giữ lịch/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1))
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body)
+    expect(body.email).toBe('khach@example.com')
   })
 
   it('shows the server validation message on a 400 response', async () => {

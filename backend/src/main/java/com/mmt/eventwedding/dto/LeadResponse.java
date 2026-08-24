@@ -14,6 +14,7 @@ public record LeadResponse(
         Integer guestCount,
         String toneColor,
         String phone,
+        String email,
         Instant createdAt
 ) {
     public static LeadResponse from(Lead lead) {
@@ -25,6 +26,7 @@ public record LeadResponse(
                 lead.getGuestCount(),
                 lead.getToneColor(),
                 lead.getPhone(),
+                lead.getEmail(),
                 lead.getCreatedAt()
         );
     }

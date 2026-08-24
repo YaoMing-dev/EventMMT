@@ -26,10 +26,14 @@ public class LeadService {
                 request.eventDate(),
                 request.guestCount(),
                 request.toneColor(),
-                request.phone()
+                request.phone(),
+                request.email()
         );
         Lead saved = leadRepository.save(lead);
         emailService.sendNewLeadNotification(saved);
+        if (saved.getEmail() != null && !saved.getEmail().isBlank()) {
+            emailService.sendCustomerConfirmation(saved);
+        }
         return LeadResponse.from(saved);
     }
 

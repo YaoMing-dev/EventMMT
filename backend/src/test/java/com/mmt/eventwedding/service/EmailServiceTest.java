@@ -23,7 +23,7 @@ class EmailServiceTest {
         EmailService service = new EmailService(mailSender);
         ReflectionTestUtils.setField(service, "toEmail", "owner@example.com");
 
-        Lead lead = new Lead(LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001");
+        Lead lead = new Lead(LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", null);
 
         service.sendNewLeadNotification(lead);
 
@@ -41,8 +41,35 @@ class EmailServiceTest {
         EmailService service = new EmailService(mailSender);
         ReflectionTestUtils.setField(service, "toEmail", "owner@example.com");
 
-        Lead lead = new Lead(LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, "son", "0900000002");
+        Lead lead = new Lead(LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, "son", "0900000002", null);
 
         assertThatCode(() -> service.sendNewLeadNotification(lead)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void sendsCustomerConfirmationToLeadEmailWithMatchingContact() {
+        JavaMailSender mailSender = mock(JavaMailSender.class);
+        EmailService service = new EmailService(mailSender);
+
+        Lead lead = new Lead(LeadCategory.WEDDING, "Le Vu Quy", LocalDate.of(2026, 9, 1), null, null, "0900000002", "khach@example.com");
+
+        service.sendCustomerConfirmation(lead);
+
+        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(mailSender).send(captor.capture());
+        SimpleMailMessage sent = captor.getValue();
+        assertThat(sent.getTo()).containsExactly("khach@example.com");
+        assertThat(sent.getText()).contains("Chị Thúy").contains("0907 623 450");
+    }
+
+    @Test
+    void doesNotThrowWhenCustomerConfirmationMailSenderFails() {
+        JavaMailSender mailSender = mock(JavaMailSender.class);
+        doThrow(new RuntimeException("smtp down")).when(mailSender).send(any(SimpleMailMessage.class));
+        EmailService service = new EmailService(mailSender);
+
+        Lead lead = new Lead(LeadCategory.EVENT, "Khai truong", LocalDate.of(2026, 8, 1), 300, null, "0900000001", "khach@example.com");
+
+        assertThatCode(() -> service.sendCustomerConfirmation(lead)).doesNotThrowAnyException();
     }
 }
