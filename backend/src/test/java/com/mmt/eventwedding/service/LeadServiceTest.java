@@ -81,4 +81,15 @@ class LeadServiceTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).toneColor()).isEqualTo("son");
     }
+
+    @Test
+    void deleteLeadDelegatesToRepository() {
+        LeadRepository repository = mock(LeadRepository.class);
+        EmailService emailService = mock(EmailService.class);
+        LeadService service = new LeadService(repository, emailService);
+
+        service.deleteLead(7L);
+
+        verify(repository).deleteById(7L);
+    }
 }

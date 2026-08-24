@@ -43,4 +43,8 @@ public class LeadService {
                 .map(LeadResponse::from)
                 .toList();
     }
+
+    public void deleteLead(Long id) {
+        leadRepository.deleteById(id);
+    }
 }

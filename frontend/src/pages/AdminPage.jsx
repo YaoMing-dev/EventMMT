@@ -5,6 +5,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('')
   const [leads, setLeads] = useState(null)
   const [error, setError] = useState('')
+  const [authHeader, setAuthHeader] = useState('')
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -21,6 +22,24 @@ export default function AdminPage() {
       }
       const data = await response.json()
       setLeads(data)
+      setAuthHeader(`Basic ${credentials}`)
+    } catch {
+      setError('Không kết nối được tới server')
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm('Xoá yêu cầu này?')) return
+    try {
+      const response = await fetch(`/api/admin/leads/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: authHeader },
+      })
+      if (response.ok) {
+        setLeads((current) => current.filter((lead) => lead.id !== id))
+      } else {
+        setError('Không xoá được — thử lại sau.')
+      }
     } catch {
       setError('Không kết nối được tới server')
     }
@@ -28,8 +47,9 @@ export default function AdminPage() {
 
   if (leads) {
     return (
-      <main style={{ padding: 40, maxWidth: 1000, margin: '0 auto' }}>
+      <main style={{ padding: 40, maxWidth: 1080, margin: '0 auto' }}>
         <h1>Danh sách yêu cầu báo giá</h1>
+        {error && <p style={{ color: 'var(--accent)' }}>{error}</p>}
         <table style={{ width: '100%', marginTop: 24, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -41,6 +61,7 @@ export default function AdminPage() {
               <th>Điện thoại</th>
               <th>Email</th>
               <th>Tạo lúc</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -54,6 +75,11 @@ export default function AdminPage() {
                 <td>{lead.phone}</td>
                 <td>{lead.email ?? '—'}</td>
                 <td>{lead.createdAt}</td>
+                <td>
+                  <button type="button" onClick={() => handleDelete(lead.id)} style={{ cursor: 'pointer' }}>
+                    Xoá
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

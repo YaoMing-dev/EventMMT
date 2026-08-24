@@ -29,4 +29,10 @@ public class LeadController {
     public List<LeadResponse> list() {
         return leadService.listLeads();
     }
+
+    @DeleteMapping("/admin/leads/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        leadService.deleteLead(id);
+        return ResponseEntity.noContent().build();
+    }
 }

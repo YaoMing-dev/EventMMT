@@ -15,7 +15,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,5 +60,13 @@ class LeadControllerTest {
         mockMvc.perform(post("/api/leads").contentType("application/json").content(body))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.phone").exists());
+    }
+
+    @Test
+    void deleteLeadReturns204AndCallsService() throws Exception {
+        mockMvc.perform(delete("/api/admin/leads/7"))
+                .andExpect(status().isNoContent());
+
+        verify(leadService).deleteLead(7L);
     }
 }
