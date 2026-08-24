@@ -38,11 +38,9 @@ services:
         sync: false
       - key: FRONTEND_ORIGIN
         value: https://mmt-frontend-5in5.onrender.com,https://minhminhthuy.io.vn,https://www.minhminhthuy.io.vn
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
       - key: NOTIFY_TO_EMAIL
+        sync: false
+      - key: RESEND_API_KEY
         sync: false
 
   - type: web
