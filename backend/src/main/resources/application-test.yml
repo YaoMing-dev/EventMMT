@@ -20,3 +20,6 @@ app:
     to-email: test@example.com
   resend:
     api-key: test-key
+  gemini:
+    api-key: test-key
+    model: gemini-2.0-flash
