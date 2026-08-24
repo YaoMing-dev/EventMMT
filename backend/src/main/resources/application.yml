@@ -31,6 +31,6 @@ app:
   images:
     base-path: ${IMAGES_BASE_PATH:D:/Job/images}
   notify:
-    to-email: ${NOTIFY_TO_EMAIL:your-email@gmail.com}
+    to-email: ${NOTIFY_TO_EMAIL:dvminhthuy@gmail.com}
   cors:
     allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
