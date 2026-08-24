@@ -404,6 +404,25 @@ body[data-view="wedding"] footer{background:#231512}
 .rail .zalo{background:#0068FF}
 .rail .fb{background:#1877F2;font-family:Georgia,serif;font-size:20px;font-weight:700}
 
+.chatw{position:fixed;right:20px;bottom:20px;z-index:80}
+.chatw-toggle{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:var(--accent-deep);color:#fff;font-weight:700;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.chatw-panel{position:absolute;right:0;bottom:68px;width:320px;max-height:440px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+.chatw-head{padding:14px 16px;background:var(--accent-deep);color:#fff;font-weight:700;font-size:14px}
+.chatw-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.chatw-msg{max-width:85%;padding:8px 12px;border-radius:10px;font-size:13.5px;line-height:1.5}
+.chatw-msg.model{align-self:flex-start;background:var(--gold-soft);color:var(--ink)}
+.chatw-msg.user{align-self:flex-end;background:var(--accent-deep);color:#fff}
+.chatw-typing{opacity:.6;font-style:italic}
+.chatw-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.chatw-form input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;background:var(--panel);color:var(--ink)}
+.chatw-form button{padding:8px 14px;border:none;border-radius:8px;background:var(--accent-deep);color:#fff;font-weight:700;cursor:pointer}
+.chatw-form button:disabled{opacity:.5;cursor:not-allowed}
+
+@media (max-width:760px){
+  .chatw{right:14px;bottom:66px}
+  .chatw-panel{width:calc(100vw - 28px);right:-6px}
+}
+
 /* menu di động (hamburger) — ẩn trên desktop */
 .menu-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:38px;height:38px;background:none;border:none;cursor:pointer;padding:0;flex:none}
 .menu-toggle span{display:block;width:100%;height:2px;background:var(--ink);border-radius:2px}
