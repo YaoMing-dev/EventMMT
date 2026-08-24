@@ -26,6 +26,7 @@ public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     private static final URI RESEND_API_URL = URI.create("https://api.resend.com/emails");
     private static final String FROM_ADDRESS = "MMT <noreply@minhminhthuy.io.vn>";
+    private static final String LOGO_URL = "https://minhminhthuy.io.vn/logo.jpg";
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Tong mau dong bo voi web: su kien = xanh corporate, cuoi hoi = vang
@@ -36,6 +37,7 @@ public class EmailService {
     private static final String WEDDING_BG = "#FAF6EE";
     private static final String INK = "#151B2C";
     private static final String MUTED = "#5B6478";
+    private static final String LEGAL_NAME = "Công Ty TNHH Dịch Vụ Thương Mại Tổ Chức Sự Kiện MMT";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private HttpClient httpClient = HttpClient.newBuilder()
@@ -67,8 +69,8 @@ public class EmailService {
         }
 
         String heading = isWedding ? "Yêu cầu cưới hỏi mới" : "Yêu cầu sự kiện mới";
-        String html = renderShell(isWedding, heading,
-                "<table style=\"width:100%;border-collapse:collapse;margin-top:4px\">" + rows + "</table>");
+        String bodyHtml = "<table style=\"width:100%;border-collapse:collapse;margin-top:4px\">" + rows + "</table>";
+        String html = renderShell(isWedding, heading, bodyHtml, null);
 
         StringBuilder text = new StringBuilder()
                 .append("Loai: ").append(lead.getCategory())
@@ -89,15 +91,17 @@ public class EmailService {
         send(toEmail, subject, text.toString(), html, lead.getPhone());
     }
 
-    // Mail cam on gui cho khach — chi goi khi khach co de lai email (khong bat
-    // buoc tren form). Noi dung/mau sac tach theo category vi hai mang co
-    // nguoi lien he va giong dieu thuong hieu khac nhau.
+    // Mail cam on gui cho khach — chi goi khi khach co de lai email (bat buoc
+    // tren form tu khi doi sang Resend). Noi dung/mau sac tach theo category
+    // vi hai mang co nguoi lien he va giong dieu thuong hieu khac nhau.
     @Async
     public void sendCustomerConfirmation(Lead lead) {
         boolean isWedding = lead.getCategory() == LeadCategory.WEDDING;
         String contactName = isWedding ? "Chị Thúy" : "Anh Hiếu";
         String contactPhone = isWedding ? "0907 623 450" : "0939 050 550";
+        String zaloUrl = isWedding ? "https://zalo.me/84907623450" : "https://zalo.me/84939050550";
         String brand = isWedding ? "Minh Minh Thúy" : "MMT Event";
+        String accent = isWedding ? WEDDING_ACCENT : EVENT_ACCENT;
         String promiseText = isWedding
                 ? "MMT sẽ phản hồi qua Zalo trong 15 phút giờ hành chính."
                 : "MMT sẽ gửi báo giá chi tiết trong 24 giờ.";
@@ -105,16 +109,24 @@ public class EmailService {
         String bodyHtml = "<p style=\"margin:0 0 16px;color:" + INK + ";font-size:15px;line-height:1.7\">Xin chào,</p>"
                 + "<p style=\"margin:0 0 20px;color:" + INK + ";font-size:15px;line-height:1.7\">"
                 + escapeHtml(brand) + " đã nhận được yêu cầu của bạn:</p>"
-                + "<table style=\"width:100%;border-collapse:collapse;margin-bottom:20px\">"
+                + "<table style=\"width:100%;border-collapse:collapse;background:" + (isWedding ? WEDDING_BG : EVENT_BG)
+                + ";border-radius:8px\"><tr><td style=\"padding:16px 18px\">"
+                + "<table style=\"width:100%;border-collapse:collapse\">"
                 + row(isWedding ? "Ngày lành dự kiến" : "Ngày dự kiến", formatDate(lead))
                 + row("Hạng mục", lead.getSubtype())
                 + "</table>"
-                + "<p style=\"margin:0 0 24px;color:" + INK + ";font-size:15px;line-height:1.7\">" + promiseText + "</p>"
-                + "<p style=\"margin:0;color:" + MUTED + ";font-size:14px;line-height:1.7\">"
-                + "Người phụ trách: <strong style=\"color:" + INK + "\">" + contactName
-                + "</strong> — Hotline/Zalo: <strong style=\"color:" + INK + "\">" + contactPhone + "</strong></p>";
+                + "</td></tr></table>"
+                + "<p style=\"margin:22px 0 24px;color:" + INK + ";font-size:15px;line-height:1.7\">" + promiseText
+                + " Nếu cần gấp, bạn có thể nhắn Zalo ngay cho " + contactName + ".</p>"
+                + "<table style=\"border-collapse:collapse\"><tr><td style=\"border-radius:8px;background:" + accent + "\">"
+                + "<a href=\"" + zaloUrl + "\" style=\"display:inline-block;padding:12px 24px;color:#fff;"
+                + "font-size:14px;font-weight:700;text-decoration:none\">Nhắn Zalo cho " + contactName + "</a>"
+                + "</td></tr></table>";
 
-        String html = renderShell(isWedding, "Cảm ơn bạn đã tin tưởng " + brand, bodyHtml);
+        String footerHtml = "Người phụ trách: <strong style=\"color:" + INK + "\">" + contactName
+                + "</strong> — Hotline/Zalo: <strong style=\"color:" + INK + "\">" + contactPhone + "</strong>";
+
+        String html = renderShell(isWedding, "Cảm ơn bạn đã tin tưởng " + brand, bodyHtml, footerHtml);
 
         String text = "Chao ban,\n\n"
                 + brand + " da nhan duoc yeu cau tu ban:\n"
@@ -129,8 +141,8 @@ public class EmailService {
 
     private String row(String label, String value) {
         return "<tr>"
-                + "<td style=\"padding:8px 16px 8px 0;color:" + MUTED + ";font-size:13px;white-space:nowrap;vertical-align:top\">" + escapeHtml(label) + "</td>"
-                + "<td style=\"padding:8px 0;color:" + INK + ";font-size:14px;font-weight:600\">" + escapeHtml(value) + "</td>"
+                + "<td style=\"padding:6px 16px 6px 0;color:" + MUTED + ";font-size:13px;white-space:nowrap;vertical-align:top\">" + escapeHtml(label) + "</td>"
+                + "<td style=\"padding:6px 0;color:" + INK + ";font-size:14px;font-weight:600\">" + escapeHtml(value) + "</td>"
                 + "</tr>";
     }
 
@@ -138,19 +150,30 @@ public class EmailService {
         return lead.getEventDate() == null ? "" : lead.getEventDate().format(DATE_FMT);
     }
 
-    private String renderShell(boolean isWedding, String heading, String bodyHtml) {
+    // footerHtml: dong chu them truoc phan chan trang phap ly (vd nguoi phu
+    // trach) — null neu khong can (mail noi bo gui MMT).
+    private String renderShell(boolean isWedding, String heading, String bodyHtml, String footerHtml) {
         String accent = isWedding ? WEDDING_ACCENT : EVENT_ACCENT;
         String bg = isWedding ? WEDDING_BG : EVENT_BG;
         String brand = isWedding ? "Minh Minh Thúy" : "MMT Event";
         String font = isWedding ? "Georgia, 'Times New Roman', serif" : "Arial, Helvetica, sans-serif";
+
+        String footerBlock = footerHtml == null ? "" : "<p style=\"margin:24px 0 0;color:" + MUTED + ";font-size:14px;line-height:1.7\">" + footerHtml + "</p>";
+
         return "<div style=\"background:" + bg + ";padding:32px 16px;font-family:" + font + "\">"
-                + "<div style=\"max-width:520px;margin:0 auto;background:#FFFFFF;border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,.08)\">"
-                + "<div style=\"background:" + accent + ";padding:22px 28px\">"
-                + "<span style=\"color:#fff;font-size:18px;font-weight:700;letter-spacing:.3px\">" + escapeHtml(brand) + "</span>"
+                + "<div style=\"max-width:520px;margin:0 auto;background:#FFFFFF;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.08);box-shadow:0 4px 18px rgba(0,0,0,.06)\">"
+                + "<div style=\"background:" + accent + ";padding:20px 28px;display:block\">"
+                + "<img src=\"" + LOGO_URL + "\" width=\"36\" height=\"36\" alt=\"\" "
+                + "style=\"width:36px;height:36px;border-radius:50%;vertical-align:middle;background:#fff\">"
+                + "<span style=\"color:#fff;font-size:18px;font-weight:700;letter-spacing:.3px;vertical-align:middle;padding-left:12px\">" + escapeHtml(brand) + "</span>"
                 + "</div>"
                 + "<div style=\"padding:28px\">"
                 + "<h1 style=\"margin:0 0 18px;font-size:20px;color:" + INK + ";font-weight:700\">" + escapeHtml(heading) + "</h1>"
                 + bodyHtml
+                + footerBlock
+                + "</div>"
+                + "<div style=\"padding:16px 28px;border-top:1px solid rgba(0,0,0,.06)\">"
+                + "<p style=\"margin:0;color:" + MUTED + ";font-size:11.5px;line-height:1.6\">" + escapeHtml(LEGAL_NAME) + "</p>"
                 + "</div>"
                 + "</div>"
                 + "</div>";
