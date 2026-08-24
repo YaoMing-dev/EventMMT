@@ -355,11 +355,6 @@ section.blk{max-width:1240px;margin:0 auto;padding:96px 28px}
   gap:clamp(34px,5vw,76px);
   align-items:center;
 }
-.ev-brand.sin-anh{grid-template-columns:1fr;max-width:760px;margin-inline:auto;text-align:center}
-.ev-brand.sin-anh .ev-brand-dau{justify-content:center}
-.ev-brand.sin-anh .ev-danh-muc{columns:2 200px;max-width:560px;margin-inline:auto}
-.ev-brand.sin-anh .ev-danh-muc li{padding-left:0;text-align:left}
-.ev-brand.sin-anh .ev-danh-muc li::before{display:none}
 .ev-brand-dau{display:flex;align-items:center;gap:18px}
 .ev-brand-dau .dau{width:52px;height:52px;flex:none;border-radius:50%;object-fit:cover;background:#fff;border:1px solid var(--line)}
 .ev-brand-dau h2{font-family:var(--display);font-weight:700;font-size:clamp(24px,3vw,32px)}

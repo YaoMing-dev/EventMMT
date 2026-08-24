@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import useScrollReveal from '../components/shared/useScrollReveal.js'
 import StatsBar from '../components/shared/StatsBar.jsx'
@@ -37,14 +36,6 @@ const QUOTES = [
 
 export default function EventPage() {
   useScrollReveal()
-  const [images, setImages] = useState([])
-
-  useEffect(() => {
-    fetch('/api/images/events')
-      .then((res) => (res.ok ? res.json() : []))
-      .then(setImages)
-      .catch(() => setImages([]))
-  }, [])
 
   return (
     <main>
@@ -62,8 +53,8 @@ export default function EventPage() {
       </section>
 
       <ProjectsList />
-      <EventSpotlights images={images} />
-      <ServicesGrid images={images} />
+      <EventSpotlights />
+      <ServicesGrid />
       <Pillars />
       <BiddingProcess />
 
@@ -83,7 +74,7 @@ export default function EventPage() {
         </div>
       </section>
 
-      <EventBrandCard images={images} />
+      <EventBrandCard />
 
       <section className="blk">
         <div className="promo rv">

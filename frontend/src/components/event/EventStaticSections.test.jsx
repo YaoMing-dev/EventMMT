@@ -10,16 +10,11 @@ describe('Event static sections', () => {
     expect(screen.getAllByText(/^0[1-4]$/)).toHaveLength(4)
   })
 
-  it('ServicesGrid renders exactly 3 service cards using provided images', () => {
-    const images = [
-      { filename: 'a.jpg', url: '/api/images/events/a.jpg' },
-      { filename: 'b.jpg', url: '/api/images/events/b.jpg' },
-      { filename: 'c.jpg', url: '/api/images/events/c.jpg' },
-    ]
-    render(<ServicesGrid images={images} />)
+  it('ServicesGrid renders exactly 3 service cards, each with its static photo', () => {
+    render(<ServicesGrid />)
     const cardImages = screen.getAllByRole('img')
     expect(cardImages).toHaveLength(3)
-    expect(cardImages[0]).toHaveAttribute('src', '/api/images/events/a.jpg')
+    cardImages.forEach((img) => expect(img.getAttribute('src')).toMatch(/^\/su-kien\//))
   })
 
   it('Pillars renders exactly 3 pillars', () => {
