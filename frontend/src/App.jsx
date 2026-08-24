@@ -4,6 +4,7 @@ import Topbar from './components/layout/Topbar.jsx'
 import Header from './components/layout/Header.jsx'
 import Footer from './components/layout/Footer.jsx'
 import RailButtons from './components/layout/RailButtons.jsx'
+import ChatWidget from './components/layout/ChatWidget.jsx'
 import HomeGate from './pages/HomeGate.jsx'
 import EventPage from './pages/EventPage.jsx'
 import WeddingPage from './pages/WeddingPage.jsx'
@@ -35,6 +36,7 @@ function Shell() {
       </Routes>
       {isSub && <Footer view={view} />}
       {isSub && <RailButtons view={view} />}
+      {isSub && <ChatWidget view={view} />}
     </>
   )
 }
