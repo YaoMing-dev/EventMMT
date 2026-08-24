@@ -63,6 +63,20 @@ describe('ContactForm', () => {
     expect(await screen.findByText(/Đã gửi yêu cầu/i)).toBeInTheDocument()
   })
 
+  it('retries once automatically if the first attempt fails to connect (e.g. backend waking up)', async () => {
+    global.fetch
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValueOnce({ ok: true, status: 201, json: async () => ({ id: 1 }) })
+    render(<ContactForm variant="event" />)
+
+    fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
+    fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+    fireEvent.click(screen.getByRole('button', { name: /Gửi yêu cầu báo giá/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
+    expect(await screen.findByText(/Đã gửi yêu cầu/i)).toBeInTheDocument()
+  })
+
   it('is optional — sends null when left blank, and includes it trimmed when filled in', async () => {
     global.fetch.mockResolvedValueOnce({ ok: true, status: 201, json: async () => ({ id: 1 }) })
     render(<ContactForm variant="wedding" />)

@@ -1,5 +1,24 @@
 import { useState } from 'react'
 
+// Backend Render (goi free) co the vua thuc day tu trang thai ngu — lan goi
+// dau tien doi khi rot mang ngay truoc khi ket noi kip. Thu lai 1 lan la du
+// de khach khong phai tu bam gui lan hai.
+async function postLead(payload) {
+  try {
+    return await fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  } catch {
+    return fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  }
+}
+
 const EVENT_TYPES = [
   'Khai trương / Động thổ / Ra quân',
   'Hội nghị / Hội thảo',
@@ -49,11 +68,7 @@ export default function ContactForm({ variant }) {
     }
 
     try {
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+      const response = await postLead(payload)
       if (response.ok) {
         setStatus('success')
         setPhone('')

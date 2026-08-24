@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import Topbar from './components/layout/Topbar.jsx'
 import Header from './components/layout/Header.jsx'
 import Footer from './components/layout/Footer.jsx'
@@ -40,6 +40,14 @@ function Shell() {
 }
 
 export default function App() {
+  // Render (goi free) cho ngu backend sau ~15 phut khong co request — lan
+  // dau danh thuc mat 20-30s, du de khach bam nut gui form ma khong thay
+  // phan hoi. Danh thuc som ngay khi mo web (truoc khi khach cuon xuong
+  // toi form) de luc bam gui backend da san sang.
+  useEffect(() => {
+    fetch('/api/leads', { method: 'GET' }).catch(() => {})
+  }, [])
+
   return (
     <BrowserRouter>
       <Shell />
