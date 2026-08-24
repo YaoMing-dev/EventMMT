@@ -48,6 +48,8 @@ export default function ContactForm({ variant }) {
     const clientErrors = {}
     if (!phone.trim()) clientErrors.phone = 'Vui lòng nhập số điện thoại'
     if (!eventDate) clientErrors.eventDate = 'Vui lòng chọn ngày dự kiến'
+    if (!email.trim()) clientErrors.email = 'Vui lòng nhập email'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) clientErrors.email = 'Email không hợp lệ'
     if (Object.keys(clientErrors).length > 0) {
       setErrors(clientErrors)
       return
@@ -85,7 +87,7 @@ export default function ContactForm({ variant }) {
   }
 
   return (
-    <form className={isEvent ? 'cform rv' : 'cform'} onSubmit={handleSubmit}>
+    <form className={isEvent ? 'cform rv' : 'cform'} onSubmit={handleSubmit} noValidate>
       <label>{isEvent ? 'Loại sự kiện' : 'Loại lễ'}</label>
       <select value={subtype} onChange={(e) => setSubtype(e.target.value)}>
         {(isEvent ? EVENT_TYPES : WEDDING_TYPES).map((t) => <option key={t} value={t}>{t}</option>)}
@@ -111,7 +113,7 @@ export default function ContactForm({ variant }) {
       />
       {errors.phone && <div className="note loi-nhap">{errors.phone}</div>}
 
-      <label>Email (không bắt buộc)</label>
+      <label>Email của bạn</label>
       <input
         type="email"
         placeholder="Để MMT gửi mail xác nhận"

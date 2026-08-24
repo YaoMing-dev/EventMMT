@@ -17,7 +17,7 @@ public record LeadRequest(
         @NotBlank(message = "Vui long nhap so dien thoai")
         @Pattern(regexp = "^[0-9 +()-]{8,15}$", message = "So dien thoai khong hop le")
         String phone,
-        // Khong bat buoc — khach chi de lai neu muon nhan mail xac nhan.
+        @NotBlank(message = "Vui long nhap email")
         @Email(message = "Email khong hop le")
         String email
 ) {}

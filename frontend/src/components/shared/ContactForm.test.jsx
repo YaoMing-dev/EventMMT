@@ -2,6 +2,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import ContactForm from './ContactForm.jsx'
 
+function fillRequiredEventFields() {
+  fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
+  fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+  fireEvent.change(screen.getByPlaceholderText(/Để MMT gửi mail xác nhận/i), { target: { value: 'khach@example.com' } })
+}
+
 describe('ContactForm', () => {
   beforeEach(() => {
     global.fetch = vi.fn()
@@ -43,12 +49,32 @@ describe('ContactForm', () => {
     expect(global.fetch).not.toHaveBeenCalled()
   })
 
+  it('shows an inline error and does not call fetch when email is blank', () => {
+    render(<ContactForm variant="event" />)
+    fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
+    fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+    fireEvent.click(screen.getByRole('button', { name: /Gửi yêu cầu báo giá/i }))
+
+    expect(screen.getByText(/Vui lòng nhập email/i)).toBeInTheDocument()
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('shows an inline error and does not call fetch when email format is invalid', () => {
+    render(<ContactForm variant="event" />)
+    fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
+    fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+    fireEvent.change(screen.getByPlaceholderText(/Để MMT gửi mail xác nhận/i), { target: { value: 'khong-phai-email' } })
+    fireEvent.click(screen.getByRole('button', { name: /Gửi yêu cầu báo giá/i }))
+
+    expect(screen.getByText(/Email không hợp lệ/i)).toBeInTheDocument()
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
   it('submits the correct payload for the event variant', async () => {
     global.fetch.mockResolvedValueOnce({ ok: true, status: 201, json: async () => ({ id: 1 }) })
     render(<ContactForm variant="event" />)
 
-    fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
-    fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+    fillRequiredEventFields()
     fireEvent.click(screen.getByRole('button', { name: /Gửi yêu cầu báo giá/i }))
 
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1))
@@ -58,7 +84,7 @@ describe('ContactForm', () => {
     expect(body.category).toBe('EVENT')
     expect(body.phone).toBe('0900000001')
     expect(body.eventDate).toBe('2026-08-01')
-    expect(body.email).toBeNull()
+    expect(body.email).toBe('khach@example.com')
 
     expect(await screen.findByText(/Đã gửi yêu cầu/i)).toBeInTheDocument()
   })
@@ -69,15 +95,14 @@ describe('ContactForm', () => {
       .mockResolvedValueOnce({ ok: true, status: 201, json: async () => ({ id: 1 }) })
     render(<ContactForm variant="event" />)
 
-    fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
-    fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+    fillRequiredEventFields()
     fireEvent.click(screen.getByRole('button', { name: /Gửi yêu cầu báo giá/i }))
 
     await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
     expect(await screen.findByText(/Đã gửi yêu cầu/i)).toBeInTheDocument()
   })
 
-  it('is optional — sends null when left blank, and includes it trimmed when filled in', async () => {
+  it('trims whitespace from the email before sending', async () => {
     global.fetch.mockResolvedValueOnce({ ok: true, status: 201, json: async () => ({ id: 1 }) })
     render(<ContactForm variant="wedding" />)
 
@@ -101,6 +126,7 @@ describe('ContactForm', () => {
 
     fireEvent.change(screen.getByLabelText(/Ngày lành dự kiến/i), { target: { value: '2026-09-01' } })
     fireEvent.change(screen.getAllByPlaceholderText(/Để MMT gọi lại tư vấn/i)[0], { target: { value: '123' } })
+    fireEvent.change(screen.getByPlaceholderText(/Để MMT gửi mail xác nhận/i), { target: { value: 'khach@example.com' } })
     fireEvent.click(screen.getByRole('button', { name: /Giữ lịch/i }))
 
     expect(await screen.findByText('So dien thoai khong hop le')).toBeInTheDocument()
@@ -114,8 +140,7 @@ describe('ContactForm', () => {
     })
     render(<ContactForm variant="event" />)
 
-    fireEvent.change(screen.getByLabelText(/Ngày dự kiến/i), { target: { value: '2026-08-01' } })
-    fireEvent.change(screen.getByPlaceholderText(/Để MMT gọi lại tư vấn/i), { target: { value: '0900000001' } })
+    fillRequiredEventFields()
     fireEvent.click(screen.getByRole('button', { name: /Gửi yêu cầu báo giá/i }))
 
     expect(await screen.findByText('Vui long chon hang muc')).toBeInTheDocument()
