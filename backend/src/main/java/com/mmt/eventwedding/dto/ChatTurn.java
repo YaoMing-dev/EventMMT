@@ -1,4 +1,9 @@
 package com.mmt.eventwedding.dto;
 
-public record ChatTurn(String role, String text) {
+import jakarta.validation.constraints.Size;
+
+public record ChatTurn(
+        String role,
+        @Size(max = 2000, message = "Noi dung qua dai") String text
+) {
 }
