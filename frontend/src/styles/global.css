@@ -344,6 +344,13 @@ section.blk{max-width:1240px;margin:0 auto;padding:96px 28px}
 .cform .note.loi-nhap{color:var(--accent);text-align:left}
 @media (max-width:860px){.contact{grid-template-columns:1fr}}
 
+/* đăng nhập admin */
+.admin-login-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.admin-login-form{width:100%;max-width:380px}
+.admin-login-form h1{font-size:24px;margin-bottom:6px}
+.admin-login-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.admin-login-form .btn{width:100%;margin-top:24px}
+
 /* ================= KHỐI THƯƠNG HIỆU — SỰ KIỆN =================
    Đối xứng với .hieu bên trang cưới hỏi (wedding.css): chữ trái, ảnh phải,
    ảnh ẩn trên điện thoại. Dùng token dùng chung (--accent/--gold/--ink…)

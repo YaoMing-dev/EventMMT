@@ -100,16 +100,17 @@ export default function AdminPage() {
   }
 
   return (
-    <main style={{ padding: 40, maxWidth: 400, margin: '0 auto' }}>
-      <h1>Đăng nhập Admin</h1>
-      <form onSubmit={handleLogin}>
+    <main className="admin-login-wrap">
+      <form className="cform admin-login-form" onSubmit={handleLogin}>
+        <h1>Đăng nhập Admin</h1>
+        <p className="admin-login-sub">Khu vực quản trị — chỉ dành cho nội bộ</p>
         <label htmlFor="admin-username">Tài khoản</label>
-        <input id="admin-username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input id="admin-username" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} />
         <label htmlFor="admin-password">Mật khẩu</label>
-        <input id="admin-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit" className="btn gold" style={{ marginTop: 16 }}>Đăng nhập</button>
+        <input id="admin-password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <button type="submit" className="btn gold">Đăng nhập</button>
+        {error && <p className="note loi-nhap">{error}</p>}
       </form>
-      {error && <p style={{ color: 'var(--accent)' }}>{error}</p>}
     </main>
   )
 }
