@@ -32,7 +32,7 @@ function Shell() {
         <Route path="/" element={<HomeGate />} />
         <Route path="/su-kien" element={<EventPage />} />
         <Route path="/tiec-cuoi" element={<WeddingPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/mmt-console-9f2k" element={<AdminPage />} />
       </Routes>
       {isSub && <Footer view={view} />}
       {isSub && <RailButtons view={view} />}

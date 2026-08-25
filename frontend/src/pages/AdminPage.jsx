@@ -1,4 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+// Khong cho cong cu tim kiem index trang nay du link co bi lo o dau do —
+// cung mot kieu voi WeddingSchema.jsx nhung go ra khi roi trang.
+function useNoIndex() {
+  useEffect(() => {
+    const meta = document.createElement('meta')
+    meta.setAttribute('name', 'robots')
+    meta.setAttribute('content', 'noindex, nofollow')
+    meta.setAttribute('data-mmt', 'admin')
+    document.head.appendChild(meta)
+    return () => meta.remove()
+  }, [])
+}
 
 function formatCreatedAt(iso) {
   const date = new Date(iso)
@@ -8,6 +21,7 @@ function formatCreatedAt(iso) {
 }
 
 export default function AdminPage() {
+  useNoIndex()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [leads, setLeads] = useState(null)
