@@ -1,5 +1,12 @@
 import { useState } from 'react'
 
+function formatCreatedAt(iso) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
 export default function AdminPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -54,47 +61,81 @@ export default function AdminPage() {
   }
 
   if (leads) {
+    const total = leads.length
+    const eventCount = leads.filter((l) => l.category === 'EVENT').length
+    const weddingCount = leads.filter((l) => l.category === 'WEDDING').length
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+    const recentCount = leads.filter((l) => new Date(l.createdAt).getTime() >= weekAgo).length
+
     return (
-      <main style={{ padding: 40, maxWidth: 1080, margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <main className="admin-wrap">
+        <div className="admin-topbar">
           <h1>Danh sách yêu cầu báo giá</h1>
-          <button type="button" onClick={handleLogout} style={{ cursor: 'pointer' }}>Đăng xuất</button>
+          <button type="button" className="btn ghost" onClick={handleLogout}>Đăng xuất</button>
         </div>
-        {error && <p style={{ color: 'var(--accent)' }}>{error}</p>}
-        <table style={{ width: '100%', marginTop: 24, borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th>Loại</th>
-              <th>Hạng mục</th>
-              <th>Ngày dự kiến</th>
-              <th>Số khách</th>
-              <th>Tông màu</th>
-              <th>Điện thoại</th>
-              <th>Email</th>
-              <th>Tạo lúc</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {leads.map((lead) => (
-              <tr key={lead.id}>
-                <td>{lead.category}</td>
-                <td>{lead.subtype}</td>
-                <td>{lead.eventDate}</td>
-                <td>{lead.guestCount ?? '—'}</td>
-                <td>{lead.toneColor ?? '—'}</td>
-                <td>{lead.phone}</td>
-                <td>{lead.email ?? '—'}</td>
-                <td>{lead.createdAt}</td>
-                <td>
-                  <button type="button" onClick={() => handleDelete(lead.id)} style={{ cursor: 'pointer' }}>
-                    Xoá
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {error && <p className="note loi-nhap">{error}</p>}
+
+        <div className="admin-stats">
+          <div className="admin-stat">
+            <b>{total}</b>
+            <span>Tổng yêu cầu</span>
+          </div>
+          <div className="admin-stat">
+            <b>{eventCount}</b>
+            <span>Sự kiện</span>
+          </div>
+          <div className="admin-stat">
+            <b>{weddingCount}</b>
+            <span>Cưới hỏi</span>
+          </div>
+          <div className="admin-stat">
+            <b>{recentCount}</b>
+            <span>7 ngày qua</span>
+          </div>
+        </div>
+
+        <div className="admin-table-card">
+          <div className="admin-table-scroll">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Loại</th>
+                  <th>Hạng mục</th>
+                  <th>Ngày dự kiến</th>
+                  <th>Số khách</th>
+                  <th>Tông màu</th>
+                  <th>Điện thoại</th>
+                  <th>Email</th>
+                  <th>Tạo lúc</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {leads.map((lead) => (
+                  <tr key={lead.id}>
+                    <td>
+                      <span className={`admin-badge admin-badge--${lead.category === 'WEDDING' ? 'wedding' : 'event'}`}>
+                        {lead.category === 'WEDDING' ? 'Cưới hỏi' : 'Sự kiện'}
+                      </span>
+                    </td>
+                    <td>{lead.subtype}</td>
+                    <td>{lead.eventDate}</td>
+                    <td>{lead.guestCount ?? '—'}</td>
+                    <td>{lead.toneColor ?? '—'}</td>
+                    <td><a href={`tel:${lead.phone}`}>{lead.phone}</a></td>
+                    <td>{lead.email ?? '—'}</td>
+                    <td>{formatCreatedAt(lead.createdAt)}</td>
+                    <td>
+                      <button type="button" className="admin-del-btn" onClick={() => handleDelete(lead.id)}>
+                        Xoá
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </main>
     )
   }
