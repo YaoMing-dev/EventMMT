@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import useScrollReveal from '../components/shared/useScrollReveal.js'
+import EventSchema from '../components/event/EventSchema.jsx'
 import StatsBar from '../components/shared/StatsBar.jsx'
 import ProcessSteps from '../components/shared/ProcessSteps.jsx'
 import Quotes from '../components/shared/Quotes.jsx'
@@ -39,6 +40,7 @@ export default function EventPage() {
 
   return (
     <main>
+      <EventSchema />
       <EventHero />
       <StatsBar items={STATS} />
       <PartnerMarquee />

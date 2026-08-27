@@ -1,7 +1,7 @@
 import { contactInfo, companyLegalName } from './contactInfo.js'
 
 const wedding = contactInfo.wedding
-export const CANONICAL = 'https://mmtevent-wedding.com/tiec-cuoi'
+export const CANONICAL = 'https://minhminhthuy.io.vn/tiec-cuoi'
 
 // Cố ý KHÔNG gắn aggregateRating: đánh giá do doanh nghiệp tự khai về chính
 // mình không đủ điều kiện rich snippet của Google và có rủi ro manual action.
@@ -34,7 +34,14 @@ export const weddingSchema = {
     opens: wedding.hoursOpen,
     closes: wedding.hoursClose,
   }],
-  areaServed: { '@type': 'City', name: 'Cần Thơ' },
+  areaServed: [
+    { '@type': 'City', name: 'Cần Thơ' },
+    { '@type': 'AdministrativeArea', name: 'Vĩnh Long' },
+    { '@type': 'AdministrativeArea', name: 'Hậu Giang' },
+    { '@type': 'AdministrativeArea', name: 'Sóc Trăng' },
+    { '@type': 'AdministrativeArea', name: 'An Giang' },
+    { '@type': 'AdministrativeArea', name: 'Kiên Giang' },
+  ],
   sameAs: [wedding.facebookUrl, wedding.mapsUrl],
   makesOffer: [
     'Trang trí bàn thờ gia tiên',

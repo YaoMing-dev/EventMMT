@@ -3,8 +3,88 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MMT Event & Wedding — Nhà thầu sự kiện & tiệc cưới miền Tây</title>
+    <title>MMT Event &amp; Wedding — Nhà thầu sự kiện &amp; tiệc cưới miền Tây</title>
+
+    <!-- =================================================================
+         SEO: Meta cơ bản — fallback tĩnh cho Google và Zalo/Facebook
+         khi crawl trang chủ (/) trước khi React mount.
+         Mỗi route con (WeddingSchema, EventSchema) sẽ ghi đè qua useEffect.
+    ================================================================= -->
+    <meta name="description" content="MMT Event &amp; Wedding — nhà thầu tổ chức sự kiện và cưới hỏi trọn gói tại Cần Thơ và các tỉnh miền Tây. Nhà bạt 1.000 khách, âm thanh ánh sáng, trang trí cưới hỏi tận nơi. Báo giá trong 24h." />
+    <meta name="keywords" content="tổ chức sự kiện Cần Thơ, cưới hỏi trọn gói miền Tây, nhà bạt sự kiện, âm thanh ánh sáng, trang trí bàn thờ gia tiên, rạp cưới Cần Thơ, MMT Event" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://minhminhthuy.io.vn/" />
+
+    <!-- Open Graph — Facebook / Zalo preview -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MMT Event &amp; Wedding" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:url" content="https://minhminhthuy.io.vn/" />
+    <meta property="og:title" content="MMT Event &amp; Wedding — Nhà thầu sự kiện &amp; tiệc cưới miền Tây" />
+    <meta property="og:description" content="Nhà thầu tổ chức sự kiện và cưới hỏi trọn gói tại Cần Thơ và các tỉnh miền Tây. Báo giá trong 24h." />
+    <meta property="og:image" content="https://minhminhthuy.io.vn/preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MMT Event &amp; Wedding — sự kiện và tiệc cưới miền Tây" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MMT Event &amp; Wedding — Nhà thầu sự kiện &amp; tiệc cưới miền Tây" />
+    <meta name="twitter:description" content="Nhà thầu tổ chức sự kiện và cưới hỏi trọn gói tại Cần Thơ và các tỉnh miền Tây." />
+    <meta name="twitter:image" content="https://minhminhthuy.io.vn/preview.jpg" />
+
+    <!-- Schema.org Organization (trang chủ gateway) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://minhminhthuy.io.vn/#organization",
+      "name": "Công Ty TNHH Dịch Vụ Thương Mại Tổ Chức Sự Kiện MMT",
+      "alternateName": ["MMT Event", "Minh Minh Thúy", "MMT Event & Wedding"],
+      "url": "https://minhminhthuy.io.vn",
+      "logo": "https://minhminhthuy.io.vn/logo.jpg",
+      "image": "https://minhminhthuy.io.vn/preview.jpg",
+      "description": "Nhà thầu tổ chức sự kiện và cưới hỏi trọn gói tại Cần Thơ và các tỉnh miền Tây.",
+      "foundingDate": "2018",
+      "areaServed": "Miền Tây Nam Bộ, Việt Nam",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Dịch vụ sự kiện và cưới hỏi",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tổ chức sự kiện doanh nghiệp" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Cưới hỏi trọn gói" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Cho thuê nhà bạt sự kiện" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Trang trí bàn thờ gia tiên" } }
+        ]
+      },
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+84939050550",
+          "contactType": "sales",
+          "name": "Anh Hiếu — MMT Event",
+          "areaServed": "VN",
+          "availableLanguage": "Vietnamese"
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+84907623450",
+          "contactType": "sales",
+          "name": "Chị Thúy — Minh Minh Thúy",
+          "areaServed": "VN",
+          "availableLanguage": "Vietnamese"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/tochucsukienlehoicantho",
+        "https://www.facebook.com/cuoihoitrongoiminhthuy"
+      ]
+    }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"

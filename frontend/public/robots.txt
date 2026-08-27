@@ -1,3 +1,5 @@
 User-agent: *
 Disallow: /admin
 Disallow: /mmt-console-9f2k
+
+Sitemap: https://minhminhthuy.io.vn/sitemap.xml
