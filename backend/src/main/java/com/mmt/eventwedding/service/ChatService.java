@@ -61,9 +61,12 @@ public class ChatService {
             Nếu khách hỏi ngoài phạm vi dịch vụ cưới hỏi, trả lời ngắn gọn là bạn chỉ hỗ trợ tư vấn dịch vụ \
             của Minh Minh Thúy và mời khách liên hệ trực tiếp cho các vấn đề khác.""";
 
+    // gemini-3.6-flash co "thinking" nen cham hon flash doi cu — do thuc te
+    // ~16s cho mot cau hoi binh thuong, timeout 10s cu khien MOI request
+    // that đeu bi huy giua chung va roi vao fallback. Nang len 25s de co bien.
     private final ObjectMapper objectMapper = new ObjectMapper();
     private HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(8))
+            .connectTimeout(Duration.ofSeconds(10))
             .build();
 
     @Value("${app.gemini.api-key}")
@@ -100,7 +103,7 @@ public class ChatService {
             URI uri = URI.create(GEMINI_API_BASE + model + ":generateContent");
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
-                    .timeout(Duration.ofSeconds(10))
+                    .timeout(Duration.ofSeconds(25))
                     .header("Content-Type", "application/json")
                     .header("x-goog-api-key", apiKey)
                     .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(payload)))
