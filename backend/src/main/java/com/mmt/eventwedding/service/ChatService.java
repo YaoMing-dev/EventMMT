@@ -93,7 +93,10 @@ public class ChatService {
 
         return Map.of(
                 "system_instruction", Map.of("parts", List.of(Map.of("text", systemPrompt))),
-                "contents", contents
+                "contents", contents,
+                // Chatbot FAQ don gian khong can suy luan sau — thinkingLevel thap
+                // giup giam do tre (gemini-3.x khong ho tro tat han thinking).
+                "generationConfig", Map.of("thinkingConfig", Map.of("thinkingLevel", "low"))
         );
     }
 
@@ -103,7 +106,7 @@ public class ChatService {
             URI uri = URI.create(GEMINI_API_BASE + model + ":generateContent");
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
-                    .timeout(Duration.ofSeconds(25))
+                    .timeout(Duration.ofSeconds(30))
                     .header("Content-Type", "application/json")
                     .header("x-goog-api-key", apiKey)
                     .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(payload)))
