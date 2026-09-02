@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 // Chatbot tu van qua Gemini (HTTP API) — cung mot kieu ket noi HTTPS nhu
 // Resend dang dung trong EmailService, khong bi Render chan nhu SMTP.
@@ -28,6 +29,23 @@ public class ChatService {
 
     static final String FALLBACK_REPLY =
             "Xin lỗi, hệ thống tư vấn tự động đang bận. Bạn nhắn Zalo hoặc gọi trực tiếp giúp mình để được hỗ trợ ngay nhé!";
+
+    // Chan cung — prompt da cam bia gia nhung Gemini thinh thoang van tu
+    // dua ra so tien cu the (kiem chung thuc te khi test). Khong dua vao
+    // model tuan thu prompt 100%, quet lai chinh cau tra loi truoc khi gui
+    // ve cho khach.
+    private static final Pattern PRICE_PATTERN = Pattern.compile(
+            "\\d[\\d.,]*\\s*(đ|vnđ|vnd|triệu|nghìn)\\b",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE
+    );
+
+    private static final String EVENT_PRICE_GUARD_REPLY =
+            "Để báo giá chính xác theo đúng quy mô, MMT cần trao đổi thêm chi tiết — bạn để lại số điện thoại "
+            + "hoặc nhắn Zalo Anh Hiếu (0939 050 550) để được báo giá chi tiết trong 24h nhé!";
+
+    private static final String WEDDING_PRICE_GUARD_REPLY =
+            "Để báo giá chính xác, Minh Minh Thúy cần khảo sát theo đúng nhu cầu của gia đình — bạn để lại số "
+            + "điện thoại hoặc nhắn Zalo Chị Thúy (0907 623 450) để được tư vấn và báo giá chi tiết nhé!";
 
     // Khong tu bia gia/so lieu — dung chinh sach da ap dung cho trang dau
     // thau (xem BiddingProcess.jsx), luon dan khach ve Zalo/dien thoai khi
@@ -124,7 +142,13 @@ public class ChatService {
                 log.error("Gemini tra ve response khong co text: {}", response.body());
                 return FALLBACK_REPLY;
             }
-            return textNode.asText();
+
+            String reply = textNode.asText();
+            if (PRICE_PATTERN.matcher(reply).find()) {
+                log.warn("Gemini tra loi co gia cu the du prompt da cam, da chan lai. Reply goc: {}", reply);
+                return "WEDDING".equals(pageContext) ? WEDDING_PRICE_GUARD_REPLY : EVENT_PRICE_GUARD_REPLY;
+            }
+            return reply;
         } catch (Exception e) {
             log.error("Loi khi goi Gemini API", e);
             return FALLBACK_REPLY;
