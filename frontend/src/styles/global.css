@@ -102,8 +102,8 @@ nav ul a:hover{color:var(--ink);border-color:var(--gold)}
 .gate .kicker{display:inline-block;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
 .gate .ev .kicker{background:#5B84FF;color:#fff}
 .gate .wd .kicker{background:#B98A3C;color:#fff}
-.gate h1{font-size:clamp(32px,3.8vw,56px);font-weight:800;line-height:1.05;margin-bottom:14px;letter-spacing:-.02em;color:#fff}
-.gate .wd h1{font-family:var(--display);font-weight:600}
+.gate .side h2{font-size:clamp(32px,3.8vw,56px);font-weight:800;line-height:1.05;margin-bottom:14px;letter-spacing:-.02em;color:#fff}
+.gate .wd h2{font-family:var(--display);font-weight:600}
 .gate p{font-size:15px;opacity:.85;line-height:1.6;margin:0 0 24px;max-width:460px}
 .gate .metrics{display:flex;gap:24px;padding:16px 0;border-top:1px solid rgba(255,255,255,.15);margin-bottom:24px;font-size:13px;color:rgba(255,255,255,.8)}
 .gate .metrics b{color:#E8B54D;font-size:18px;display:block;font-family:var(--display)}
@@ -111,7 +111,8 @@ nav ul a:hover{color:var(--ink);border-color:var(--gold)}
 .gate .wd .go{border-color:#E8B54D;color:#E8B54D}
 .gate .brandmid{position:absolute;left:50%;top:8vh;transform:translateX(-50%);z-index:5;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff;pointer-events:none}
 .gate .brandmid .mark{width:58px;height:58px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#fff}
-.gate .brandmid b{font-family:var(--display);font-size:22px;letter-spacing:1px}
+.gate .brandmid h1{margin:0;display:flex;flex-direction:column;align-items:center;gap:10px;font-weight:400}
+.gate .brandmid h1 span{font-family:var(--display);font-size:22px;letter-spacing:1px}
 .gate .brandmid small{font-size:10px;letter-spacing:3px;text-transform:uppercase;opacity:.85}
 @media (max-width:860px){.gate{flex-direction:column}.gate .side:hover{flex:1}.gate .side{min-height:52vh;align-items:center;padding:80px 24px}.gate .brandmid{display:none}}
 

@@ -6,8 +6,7 @@ export default function HomeGate() {
       <div className="gate">
         <div className="brandmid">
           <img className="mark" src="/logo.jpg" alt="MMT" />
-          <b>MMT</b>
-          <small>Event &amp; Wedding</small>
+          <h1><span>MMT</span><small>Event &amp; Wedding</small></h1>
         </div>
 
         <Link className="side ev" to="/su-kien">
@@ -17,7 +16,7 @@ export default function HomeGate() {
           />
           <div className="inner">
             <span className="kicker">Nhà thầu sự kiện trọn gói</span>
-            <h1>SỰ KIỆN DOANH NGHIỆP</h1>
+            <h2>SỰ KIỆN DOANH NGHIỆP</h2>
             <p>Nhà bạt 1.000 khách, sân khấu, âm thanh ánh sáng — khai trương, ra quân, hội nghị, mở bán.</p>
             <div className="metrics">
               <span><b>10+</b> Năm thi công</span>
@@ -34,7 +33,7 @@ export default function HomeGate() {
           />
           <div className="inner">
             <span className="kicker">Cưới hỏi trọn gói</span>
-            <h1>MINH MINH THÚY</h1>
+            <h2>MINH MINH THÚY</h2>
             <p>Bàn thờ gia tiên, mâm quả, cổng hoa, rạp cưới và bàn ghế đãi tiệc — khảo sát tận nhà tại Cần Thơ.</p>
             <div className="metrics">
               <span><b>2018</b> Bắt đầu tại Cần Thơ</span>

@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
-import { weddingSchema, CANONICAL } from '../../data/weddingSchema.js'
+import { weddingSchema } from '../../data/weddingSchema.js'
+import { ROUTES_META } from '../../data/routeMeta.js'
+import useRouteMeta from '../../hooks/useRouteMeta.js'
 
-const TITLE = 'Minh Minh Thúy — Trang trí gia tiên, rạp cưới, cổng hoa tại Cần Thơ'
-const DESCRIPTION =
-  'Trang trí bàn thờ gia tiên, cho thuê rạp cưới, cổng hoa và bàn ghế đãi tiệc tại Cần Thơ. '
-  + 'Khảo sát tận nhà, dựng trước ngày cưới, thu dọn sau tiệc.'
+const { title: TITLE, description: DESCRIPTION, canonical: CANONICAL } = ROUTES_META['/tiec-cuoi']
 
 function themThe(ten, thuoc, gia) {
   const the = document.createElement(ten)
@@ -15,29 +14,21 @@ function themThe(ten, thuoc, gia) {
 }
 
 /**
- * Gắn tiêu đề, mô tả, canonical và JSON-LD vào <head>, rồi gỡ ra khi rời
- * trang — SPA dùng chung một document nên phần head của mảng cưới hỏi không
- * được ở lại trang sự kiện.
+ * Cập nhật title/description/canonical dùng chung, gắn JSON-LD riêng rồi gỡ
+ * ra khi rời trang — SPA dùng chung một document nên phần head của mảng
+ * cưới hỏi không được ở lại trang sự kiện.
  */
 export default function WeddingSchema() {
+  useRouteMeta({ title: TITLE, description: DESCRIPTION, canonical: CANONICAL })
+
   useEffect(() => {
-    const tieuDeCu = document.title
-    document.title = TITLE
+    // Trang có thể đã được prerender kèm sẵn script này — cập nhật nội dung
+    // thay vì chèn thêm để tránh 2 JSON-LD trùng nhau.
+    const script = document.querySelector('script[data-mmt="wedding"]')
+      ?? themThe('script', { type: 'application/ld+json', 'data-mmt': 'wedding' })
+    script.textContent = JSON.stringify(weddingSchema)
 
-    const the = [
-      themThe('meta', { name: 'description', content: DESCRIPTION, 'data-mmt': 'wedding' }),
-      themThe('link', { rel: 'canonical', href: CANONICAL, 'data-mmt': 'wedding' }),
-      themThe(
-        'script',
-        { type: 'application/ld+json', 'data-mmt': 'wedding' },
-        JSON.stringify(weddingSchema),
-      ),
-    ]
-
-    return () => {
-      document.title = tieuDeCu
-      the.forEach((el) => el.remove())
-    }
+    return () => script.remove()
   }, [])
 
   return null
