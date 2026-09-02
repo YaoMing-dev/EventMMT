@@ -1,9 +1,3 @@
-databases:
-  - name: mmt-db
-    plan: free
-    databaseName: mmt_event_wedding
-    user: mmt_user
-
 services:
   - type: web
     name: mmt-backend
@@ -12,26 +6,21 @@ services:
     dockerContext: ./backend
     plan: free
     envVars:
+      # DB free của Render tự xoá sau 30 ngày — chuyển sang Neon (Postgres
+      # free vĩnh viễn, không hết hạn). Giá trị thật đặt tay trong dashboard
+      # Render (Environment tab), không lưu trong file này.
       - key: DB_HOST
-        fromDatabase:
-          name: mmt-db
-          property: host
+        sync: false
       - key: DB_PORT
-        fromDatabase:
-          name: mmt-db
-          property: port
+        sync: false
       - key: DB_NAME
-        fromDatabase:
-          name: mmt-db
-          property: database
+        sync: false
       - key: DB_USER
-        fromDatabase:
-          name: mmt-db
-          property: user
+        sync: false
       - key: DB_PASSWORD
-        fromDatabase:
-          name: mmt-db
-          property: password
+        sync: false
+      - key: DB_SSLMODE
+        value: require
       - key: ADMIN_USERNAME
         sync: false
       - key: ADMIN_PASSWORD

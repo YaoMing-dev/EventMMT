@@ -4,7 +4,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:mmt_event_wedding}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:mmt_event_wedding}?sslmode=${DB_SSLMODE:prefer}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
   jpa:
