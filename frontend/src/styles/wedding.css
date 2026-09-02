@@ -145,6 +145,11 @@ body[data-theme="dark"] .mmt-mt{
 }
 .mmt-mt .de-phu{max-width:52ch;margin:18px auto 0;color:var(--muc-nhat);font-size:15.5px}
 
+.mmt-mt .crumbs{display:block;font-size:12.5px;color:var(--mo);margin-bottom:18px}
+.mmt-mt .crumbs a:hover{color:var(--muc)}
+.mmt-mt .foto-doi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:clamp(32px,4vw,48px)}
+.mmt-mt .foto-doi img{width:100%;border-radius:8px;aspect-ratio:4/3;object-fit:cover}
+
 /* ============================================================
    BỐN THỜI ĐIỂM — trục dọc, so le hai bên
    Đây là phần "chữ ký" của trang: một ngày cưới là một chuỗi
@@ -188,6 +193,7 @@ body[data-theme="dark"] .mmt-mt{
 .mmt-mt .moc:nth-child(odd) p{margin-left:auto}
 .mmt-mt .viec{margin:14px 0 0;padding:0;list-style:none;font-size:13.5px;color:var(--mo)}
 .mmt-mt .viec li{padding-block:2px}
+.mmt-mt .viec-link{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--vang);border-bottom:1.5px solid currentColor;padding-bottom:2px}
 
 @media (max-width:760px){
   .mmt-mt .moc-boc::before,.mmt-mt .moc-boc::after{left:5px;margin-left:0}

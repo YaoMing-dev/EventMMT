@@ -54,7 +54,12 @@ button{font-family:var(--body)}
 
 .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11.5px;font-weight:600;letter-spacing:3px;color:var(--gold-text);text-transform:uppercase}
 .eyebrow::before{content:"";width:26px;height:1px;background:var(--gold);opacity:.6}
-h2{font-family:var(--display);font-weight:600;font-size:clamp(28px,3.4vw,42px);line-height:1.16;margin:12px 0 14px;letter-spacing:-.01em}
+
+.crumbs{display:block;font-size:12.5px;color:var(--muted);margin-bottom:18px}
+.crumbs a:hover{color:var(--ink)}
+.svc-anh{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:32px}
+.svc-anh img{width:100%;border-radius:var(--r);aspect-ratio:4/3;object-fit:cover}
+h2,.sec-head h1{font-family:var(--display);font-weight:600;font-size:clamp(28px,3.4vw,42px);line-height:1.16;margin:12px 0 14px;letter-spacing:-.01em}
 h2 em{font-style:italic;color:var(--accent)}
 body[data-view="event"] h2 em{color:var(--gold)}
 

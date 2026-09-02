@@ -2,10 +2,13 @@
 //
 // Vì đây là SPA build tĩnh (render.yaml rewrite "/*" -> "/index.html"),
 // Googlebot và bot preview Zalo/Facebook (không chạy JS) luôn nhận cùng
-// một index.html cho mọi route — trước đây khiến /su-kien và /tiec-cuoi
-// mang title/description/canonical của trang chủ. Script này nhân bản
-// dist/index.html cho từng route con và ghi đè đúng thẻ head, để mỗi route
-// tự đứng được ngay ở lần crawl/preview đầu tiên, trước khi React chạy.
+// một index.html cho mọi route — trước đây khiến mỗi route con mang
+// title/description/canonical của trang chủ. Script này nhân bản
+// dist/index.html cho từng route con và ghi đè đúng thẻ head + JSON-LD, để
+// mỗi route tự đứng được ngay ở lần crawl/preview đầu tiên, trước khi React
+// chạy. render.yaml cần một rule rewrite tường minh cho mỗi route ở đây,
+// vì Render không tự phân giải "/duong-dan" (không có "/" cuối) thành
+// "duong-dan/index.html".
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
@@ -13,6 +16,8 @@ import { dirname, join } from 'node:path'
 import { ROUTES_META } from '../src/data/routeMeta.js'
 import { eventSchema } from '../src/data/eventSchema.js'
 import { weddingSchema } from '../src/data/weddingSchema.js'
+import { eventServicePages, eventServiceRouteMeta, eventServiceSchemas } from '../src/data/eventServicePages.js'
+import { weddingServicePages, weddingServiceRouteMeta, weddingServiceSchemas } from '../src/data/weddingServicePages.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const distDir = join(__dirname, '..', 'dist')
@@ -24,13 +29,25 @@ const escapeHtml = (value) => value
   .replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;')
 
-const ROUTE_SCHEMAS = {
-  '/su-kien': { schema: eventSchema, tag: 'event' },
-  '/tiec-cuoi': { schema: weddingSchema, tag: 'wedding' },
-}
+// { path, meta: {title, description, canonical}, schemas: [...], tag }
+const ROUTES = [
+  { path: '/su-kien', meta: ROUTES_META['/su-kien'], schemas: [eventSchema], tag: 'event' },
+  { path: '/tiec-cuoi', meta: ROUTES_META['/tiec-cuoi'], schemas: [weddingSchema], tag: 'wedding' },
+  ...eventServicePages.map((page) => ({
+    path: page.path,
+    meta: eventServiceRouteMeta(page),
+    schemas: eventServiceSchemas(page),
+    tag: `svc-event-${page.slug}`,
+  })),
+  ...weddingServicePages.map((page) => ({
+    path: page.path,
+    meta: weddingServiceRouteMeta(page),
+    schemas: weddingServiceSchemas(page),
+    tag: `svc-wedding-${page.slug}`,
+  })),
+]
 
-function renderForRoute(path) {
-  const meta = ROUTES_META[path]
+function renderForRoute({ meta, schemas, tag }) {
   const title = escapeHtml(meta.title)
   const description = escapeHtml(meta.description)
 
@@ -44,21 +61,23 @@ function renderForRoute(path) {
     .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${title}$2`)
     .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${description}$2`)
 
-  const routeSchema = ROUTE_SCHEMAS[path]
-  if (routeSchema) {
-    const script = `<script type="application/ld+json" data-mmt="${routeSchema.tag}">`
-      + `${JSON.stringify(routeSchema.schema)}</script>\n  </head>`
-    html = html.replace('</head>', script)
-  }
+  // Route với 1 schema duy nhất (/su-kien, /tiec-cuoi) giữ nguyên data-mmt
+  // không đánh số, khớp đúng selector mà EventSchema/WeddingSchema tìm lúc
+  // chạy JS (xem "reuse-if-exists" trong 2 file đó) — tránh sinh 2 bản.
+  const scripts = schemas
+    .map((schema, i) => {
+      const dataTag = schemas.length === 1 ? tag : `${tag}-${i}`
+      return `<script type="application/ld+json" data-mmt="${dataTag}">${JSON.stringify(schema)}</script>`
+    })
+    .join('\n  ')
+  html = html.replace('</head>', `${scripts}\n  </head>`)
 
   return html
 }
 
-for (const path of Object.keys(ROUTES_META)) {
-  if (path === '/') continue // dist/index.html đã đúng sẵn cho trang chủ
-
-  const outDir = join(distDir, path)
+for (const route of ROUTES) {
+  const outDir = join(distDir, route.path)
   mkdirSync(outDir, { recursive: true })
-  writeFileSync(join(outDir, 'index.html'), renderForRoute(path))
-  console.log(`Prerendered ${path} -> dist${path}/index.html`)
+  writeFileSync(join(outDir, 'index.html'), renderForRoute(route))
+  console.log(`Prerendered ${route.path} -> dist${route.path}/index.html`)
 }

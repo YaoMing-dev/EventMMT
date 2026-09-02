@@ -9,13 +9,21 @@ import HomeGate from './pages/HomeGate.jsx'
 import EventPage from './pages/EventPage.jsx'
 import WeddingPage from './pages/WeddingPage.jsx'
 import AdminPage from './pages/AdminPage.jsx'
+import EventServicePage from './components/event/EventServicePage.jsx'
+import WeddingServicePage from './components/wedding/WeddingServicePage.jsx'
+import { eventServicePages } from './data/eventServicePages.js'
+import { weddingServicePages } from './data/weddingServicePages.js'
 import useTheme from './hooks/useTheme.js'
 
-const VIEW_BY_PATH = { '/su-kien': 'event', '/tiec-cuoi': 'wedding' }
+function resolveView(pathname) {
+  if (pathname === '/su-kien' || pathname.startsWith('/su-kien/')) return 'event'
+  if (pathname === '/tiec-cuoi' || pathname.startsWith('/tiec-cuoi/')) return 'wedding'
+  return 'home'
+}
 
 function Shell() {
   const location = useLocation()
-  const view = VIEW_BY_PATH[location.pathname] ?? 'home'
+  const view = resolveView(location.pathname)
   const isSub = view !== 'home'
   const [theme, toggleTheme] = useTheme()
 
@@ -32,6 +40,12 @@ function Shell() {
         <Route path="/" element={<HomeGate />} />
         <Route path="/su-kien" element={<EventPage />} />
         <Route path="/tiec-cuoi" element={<WeddingPage />} />
+        {eventServicePages.map((page) => (
+          <Route key={page.path} path={page.path} element={<EventServicePage page={page} />} />
+        ))}
+        {weddingServicePages.map((page) => (
+          <Route key={page.path} path={page.path} element={<WeddingServicePage page={page} />} />
+        ))}
         <Route path="/mmt-console-9f2k" element={<AdminPage />} />
       </Routes>
       {isSub && <Footer view={view} />}

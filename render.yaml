@@ -64,6 +64,21 @@ services:
         source: /tiec-cuoi
         destination: /tiec-cuoi/index.html
       - type: rewrite
+        source: /su-kien/nha-bat-su-kien
+        destination: /su-kien/nha-bat-su-kien/index.html
+      - type: rewrite
+        source: /su-kien/khai-truong-dong-tho-ra-quan
+        destination: /su-kien/khai-truong-dong-tho-ra-quan/index.html
+      - type: rewrite
+        source: /su-kien/hoi-nghi-hoi-thao
+        destination: /su-kien/hoi-nghi-hoi-thao/index.html
+      - type: rewrite
+        source: /tiec-cuoi/trang-tri-ban-tho-gia-tien
+        destination: /tiec-cuoi/trang-tri-ban-tho-gia-tien/index.html
+      - type: rewrite
+        source: /tiec-cuoi/mam-qua-cuoi-hoi
+        destination: /tiec-cuoi/mam-qua-cuoi-hoi/index.html
+      - type: rewrite
         source: /*
         destination: /index.html
     headers:

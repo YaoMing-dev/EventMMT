@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 
 // Nội dung chia theo thời điểm trong ngày cưới, không chia theo loại dịch vụ:
 // gia đình Việt nghĩ theo trình tự "tối nay dựng rạp, sáng làm lễ, chiều đãi tiệc".
@@ -24,6 +25,7 @@ const MOMENTS = [
       'Bộ lư đồng, chân nến, mâm trái cây',
       'Phối màu theo bàn thờ gốc, không phá bố cục nhà',
     ],
+    to: '/tiec-cuoi/trang-tri-ban-tho-gia-tien',
   },
   {
     gio: 'Sáng — lễ hỏi',
@@ -35,6 +37,7 @@ const MOMENTS = [
       'Mâm trái cây, bánh phu thê, trà rượu',
       'Đội ngũ bê tráp đồng phục',
     ],
+    to: '/tiec-cuoi/mam-qua-cuoi-hoi',
   },
   {
     gio: 'Giữa buổi — rước dâu',
@@ -116,6 +119,7 @@ export default function MomentsTimeline() {
                 <ul className="viec">
                   {moment.items.map((item) => <li key={item}>{item}</li>)}
                 </ul>
+                {moment.to && <Link to={moment.to} className="viec-link">Xem chi tiết →</Link>}
               </div>
             </article>
           ))}

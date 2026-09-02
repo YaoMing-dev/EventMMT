@@ -1,18 +1,19 @@
+import { Link } from 'react-router-dom'
 import { nhaBatAnh, khaiTruongAnh, hoiNghiAnh } from '../../data/eventGallery.js'
 
 const SERVICES = [
   { num: '01', img: nhaBatAnh, title: 'Nhà bạt không gian & mở bán ngoài trời',
     desc: 'Hạng mục thế mạnh đặc trưng của MMT tại miền Tây — che nắng mưa tuyệt đối cho sự kiện quy mô lớn.',
     items: ['Nhà bạt sọc quy mô đến 1.000 khách', 'Quạt hơi nước, khu tea break', 'Thi công trong 48 giờ'],
-    cap: 'Ảnh thực tế — Đội ngũ MMT tại hiện trường' },
+    cap: 'Ảnh thực tế — Đội ngũ MMT tại hiện trường', to: '/su-kien/nha-bat-su-kien' },
   { num: '02', img: khaiTruongAnh, title: 'Lễ khai trương · Động thổ · Ra quân',
     desc: 'Kịch bản nghi thức chuẩn doanh nghiệp, chạy thử toàn bộ trước giờ G.',
     items: ['Sân khấu, backdrop, cổng chào', 'Múa lân, MC, nghi thức cắt băng', 'Kỹ thuật trực suốt buổi lễ'],
-    cap: 'Ảnh dự án — Khai trương Viettien House' },
+    cap: 'Ảnh dự án — Khai trương Viettien House', to: '/su-kien/khai-truong-dong-tho-ra-quan' },
   { num: '03', img: hoiNghiAnh, title: 'Hội nghị · Hội thảo & cho thuê thiết bị',
     desc: 'Trọn gói kỹ thuật cho hội nghị trong nhà lẫn không gian mở, hoặc thuê lẻ từng hạng mục.',
     items: ['Âm thanh hội nghị, màn hình LED', 'Bàn ghế đại biểu, đón tiếp', 'Giao lắp tận nơi trong ngày'],
-    cap: 'Ảnh dự án — Hội nghị khách hàng Mạnh Nông' },
+    cap: 'Ảnh dự án — Hội nghị khách hàng Mạnh Nông', to: '/su-kien/hoi-nghi-hoi-thao' },
 ]
 
 export default function ServicesGrid() {
@@ -29,7 +30,7 @@ export default function ServicesGrid() {
               <h3>{s.title}</h3>
               <p>{s.desc}</p>
               <ul>{s.items.map((it) => <li key={it}>{it}</li>)}</ul>
-              <span className="more">Xem chi tiết</span>
+              <Link className="more" to={s.to}>Xem chi tiết →</Link>
             </div>
             <div className="card-ph">
               <div className="img">

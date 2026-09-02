@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
 import ProjectsList from './ProjectsList.jsx'
 import ServicesGrid from './ServicesGrid.jsx'
@@ -11,7 +12,7 @@ describe('Event static sections', () => {
   })
 
   it('ServicesGrid renders exactly 3 service cards, each with its static photo', () => {
-    render(<ServicesGrid />)
+    render(<ServicesGrid />, { wrapper: MemoryRouter })
     const cardImages = screen.getAllByRole('img')
     expect(cardImages).toHaveLength(3)
     cardImages.forEach((img) => expect(img.getAttribute('src')).toMatch(/^\/su-kien\//))
