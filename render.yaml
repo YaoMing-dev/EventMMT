@@ -58,6 +58,12 @@ services:
         source: /api/*
         destination: https://mmt-backend-k6mc.onrender.com/api/*
       - type: rewrite
+        source: /su-kien
+        destination: /su-kien/index.html
+      - type: rewrite
+        source: /tiec-cuoi
+        destination: /tiec-cuoi/index.html
+      - type: rewrite
         source: /*
         destination: /index.html
     headers:
